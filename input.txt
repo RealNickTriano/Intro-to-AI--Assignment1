@@ -1,0 +1,4 @@
+2 4 --- start vertex (x,y)
+2 1 --- end vertex (x,y)
+4 3 --- dimensions of grid (x,y)
+1 1 0
