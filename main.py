@@ -7,6 +7,24 @@ root.geometry("1920x1080")
 
 my_canvas = Canvas(root, width=1920, height=1080, bg="white")
 my_canvas.pack(pady=20)
+vertices = []
+
+lbl = Label(root)
+lbl.place(x=200, y=20, anchor='nw')
+
+def handle_enter_vertex(event):
+    print('enter')
+    # find the canvas item below mouse cursor
+    item = my_canvas.find_withtag("current")
+    # show it using the label
+    lbl.config(text=item[0])
+    # now we can get this vertex from our stored array of vertices
+    # and check anything we want!
+
+def handle_leave_vertex(event):
+    print('leave')
+    # clear the label text
+    lbl.config(text="")
 
 def find_middle_edges(vertex_num):
     edges = []
@@ -53,12 +71,17 @@ def create_circle(x, y, r, canvas): # center x,y, radius
     y0 = y - r
     x1 = x + r
     y1 = y + r
-    return canvas.create_oval(x0, y0, x1, y1, fill='#000')
+    c = canvas.create_oval(x0, y0, x1, y1, fill='#000')
+    canvas.tag_bind(c, "<Enter>", handle_enter_vertex)
+    canvas.tag_bind(c, "<Leave>", handle_leave_vertex)
+    vertices.append(c)
+
+    return c
 
 def display_grid(matrix, m, n): # n = dim of matrix n * n
-    for i in range(0, (m + 1)):
-        for j in range(0, (n + 1)):
-            create_circle(i * 20 + 10, j * 20 + 10, 3,  my_canvas)
+    for i in range(0, (n + 1)):
+        for j in range(0, (m + 1)):
+            create_circle(j * 20 + 10, i * 20 + 10, 3,  my_canvas)
     for k in range(0, (m + 1) * (n + 1)):
         for q in range(0, (m + 1) * (n + 1)):
             if(matrix[k][q] == 1):
@@ -72,5 +95,7 @@ display_grid(create_adj_matrix(4,3), 4, 3)
 
 for i in range(0, 20):
     print(create_adj_matrix(4,3)[i])
+
+print(my_canvas.coords(vertices[0]))
 
 root.mainloop()
