@@ -30,7 +30,6 @@ lbl_f_value.place(relx=0.7, rely=0.95, anchor='center')
 # --------- End Create labels ---------------
 
 def updateLabels(v):
-    print(v)
     lbl_x_value.config(text= 'x: ' + str(v.x_pos))
     lbl_y_value.config(text= 'y: ' + str(v.y_pos))
     lbl_goal.config(text= 'goal: ' + str(v.goal))
@@ -50,6 +49,7 @@ def handle_leave_vertex(event):
     # clear the label text
     pass
 
+# Not needed, just for testing
 def find_middle_edges(vertex_num):
     edges = []
 
@@ -73,7 +73,19 @@ def find_middle_edges(vertex_num):
 
     return edges
 
-def create_adj_matrix(m, n):
+# TODO: Refactor to use data from input file
+# How to create matrix from info like  1 1 0
+# -> cell 1, 1 is unblocked
+# -> vertex 0 is connected to 1, 5, 6
+# -> 5 is connected to 1
+# 1 2 1 -> cell 1 2 is blocked
+# -> just dont connect vertex 5 to anything?
+# when a cell is unblocked create all the edges
+# this wont cause overlap cuz you will replace a 1 with a 1 which is fine
+
+
+#Types: Tuple: start, Tuple end, int m, int n, Array[Tuple(x,y,z)]: 
+def create_adj_matrix(start, end, m, n):
     matrix = []
     
     for i in range(0, (m + 1) * (n + 1)):
@@ -104,18 +116,19 @@ def create_circle(x, y, r, canvas): # center x,y, radius
 
     return c
 
+# From adjacency matrix draw the graph O(n^2)
 def display_grid(matrix, m, n): # n = dim of matrix n * n
     for i in range(0, (n + 1)):
         for j in range(0, (m + 1)):
-            create_circle(j * 20 + 10, i * 20 + 10, 3,  my_canvas)
+            create_circle(j * 20 + 100, i * 20 + 100, 5,  my_canvas)
     for k in range(0, (m + 1) * (n + 1)):
-        for q in range(0, (m + 1) * (n + 1)):
+        for q in range(k, (m + 1) * (n + 1)):
             if(matrix[k][q] == 1):
                 # draw line from vertex i to vertex j
-                my_canvas.create_line((k % 5) * 20 + 10, 
-                                    math.floor(k / 5) * 20 + 10, 
-                                    (q % 5) * 20 + 10, 
-                                    math.floor(q / 5) * 20 + 10)
+                my_canvas.create_line((k % 5) * 20 + 100, 
+                                    math.floor(k / 5) * 20 + 100, 
+                                    (q % 5) * 20 + 100, 
+                                    math.floor(q / 5) * 20 + 100)
 
 display_grid(create_adj_matrix(4,3), 4, 3)
 
