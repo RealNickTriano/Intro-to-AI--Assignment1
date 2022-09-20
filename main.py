@@ -1,4 +1,5 @@
 import math
+from Vertex import Vertex
 from tkinter import *
 
 root = Tk()
@@ -9,22 +10,45 @@ my_canvas = Canvas(root, width=1920, height=1080, bg="white")
 my_canvas.pack(pady=20)
 vertices = []
 
-lbl = Label(root)
-lbl.place(x=200, y=20, anchor='nw')
+# --------- Create labels ---------------
+
+lbl_x_value = Label(my_canvas, bg='white', font=('Arial', 16), text='x: ')
+lbl_y_value = Label(my_canvas, bg='white', font=('Arial', 16), text='y: ')
+lbl_goal = Label(my_canvas, bg='white', font=('Arial', 16), text='goal: ')
+lbl_start = Label(my_canvas, bg='white', font=('Arial', 16), text='start: ')
+lbl_h_value = Label(my_canvas, bg='white', font=('Arial', 16), text='h: ')
+lbl_g_value = Label(my_canvas, bg='white', font=('Arial', 16), text='g: ')
+lbl_f_value = Label(my_canvas, bg='white', font=('Arial', 16), text='f: ')
+lbl_x_value.place(relx=0.1, rely=0.95, anchor='center')
+lbl_y_value.place(relx=0.2, rely=0.95, anchor='center')
+lbl_goal.place(relx=0.3, rely=0.95, anchor='center')
+lbl_start.place(relx=0.4, rely=0.95, anchor='center')
+lbl_h_value.place(relx=0.5, rely=0.95, anchor='center')
+lbl_g_value.place(relx=0.6, rely=0.95, anchor='center')
+lbl_f_value.place(relx=0.7, rely=0.95, anchor='center')
+
+# --------- End Create labels ---------------
+
+def updateLabels(v):
+    print(v)
+    lbl_x_value.config(text= 'x: ' + str(v.x_pos))
+    lbl_y_value.config(text= 'y: ' + str(v.y_pos))
+    lbl_goal.config(text= 'goal: ' + str(v.goal))
+    lbl_start.config(text= 'start: ' + str(v.start))
+    lbl_h_value.config(text= 'h: ' + str(v.h_value))
+    lbl_g_value.config(text= 'g: ' + str(v.g_value))
+    lbl_f_value.config(text= 'f: ' + str(v.f_value))
 
 def handle_enter_vertex(event):
-    print('enter')
     # find the canvas item below mouse cursor
     item = my_canvas.find_withtag("current")
-    # show it using the label
-    lbl.config(text=item[0])
     # now we can get this vertex from our stored array of vertices
     # and check anything we want!
+    updateLabels(vertices[item[0] - 1])
 
 def handle_leave_vertex(event):
-    print('leave')
     # clear the label text
-    lbl.config(text="")
+    pass
 
 def find_middle_edges(vertex_num):
     edges = []
@@ -74,7 +98,9 @@ def create_circle(x, y, r, canvas): # center x,y, radius
     c = canvas.create_oval(x0, y0, x1, y1, fill='#000')
     canvas.tag_bind(c, "<Enter>", handle_enter_vertex)
     canvas.tag_bind(c, "<Leave>", handle_leave_vertex)
-    vertices.append(c)
+    # Hold vertex in array
+    v = Vertex(c, x, y, False, False, 0, 0)
+    vertices.append(v)
 
     return c
 
@@ -92,10 +118,5 @@ def display_grid(matrix, m, n): # n = dim of matrix n * n
                                     math.floor(q / 5) * 20 + 10)
 
 display_grid(create_adj_matrix(4,3), 4, 3)
-
-for i in range(0, 20):
-    print(create_adj_matrix(4,3)[i])
-
-print(my_canvas.coords(vertices[0]))
 
 root.mainloop()
