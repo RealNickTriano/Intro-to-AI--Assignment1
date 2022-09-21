@@ -101,18 +101,20 @@ def create_adj_matrix(m, n, cells):
     # matrix is init with all 0's
 
     for item in cells:
+        print(item)
         x = item[0] - 1 
         y = item[1] - 1
         blocked = item[2]
         # Find vertex id from (x, y)
-        vid = y * m + x
+        vid = y * (m + 1) + x
+        print(vid)
         if not blocked:
             matrix[vid][vid + 1] = 1
-            matrix[vid][vid + m] = 1
             matrix[vid][vid + m + 1] = 1
-            matrix[vid + m][vid + 1] = 1
-            matrix[vid + m][vid + m + 1] = 1
+            matrix[vid][vid + m + 2] = 1
+            matrix[vid + m + 1][vid + m + 2] = 1
             matrix[vid + 1][vid + m + 1] = 1
+            matrix[vid + 1][vid + m + 2] = 1
         else:
             pass
 

@@ -25,6 +25,6 @@ y(3) * m(5) = 15
 12 / 5 2
 
 if not blocked:
-    connect vertex v with v+1, v + m, v + m + 1
+    connect vertex v with v + 1, v + m, v + m + 1
     connect v + m with v + 1, v + m + 1
     connect v + 1 with v + m + 1
