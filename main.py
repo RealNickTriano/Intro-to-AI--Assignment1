@@ -85,8 +85,12 @@ def find_middle_edges(vertex_num):
 
 
 #Types: Tuple: start, Tuple end, int m, int n, Array[Tuple(x,y,z)]: 
-def create_adj_matrix(start, end, m, n):
+def create_adj_matrix(start, end, m, n, cells):
     matrix = []
+    # (m) * (start(y) - 1) + (start(x) - 1) = index of vertex in vertices[]
+    # (m) * end(y) + (end(x) - 1) = index of end vertex
+    vertices[m * (start[1] - 1) + (start[0] - 1)].start = True
+    vertices[m * (end[1] - 1) + (end[0] - 1)].end = True
     
     for i in range(0, (m + 1) * (n + 1)):
         row = []
