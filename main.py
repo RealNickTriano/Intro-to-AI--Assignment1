@@ -2,6 +2,13 @@ import math
 from Vertex import Vertex
 from tkinter import *
 
+
+PADDING_X = 50
+PADDING_Y = 50
+SPACEING_X = 50
+SPACEING_Y = 50
+NODE_RADIUS = 10
+
 root = Tk()
 root.title('Codemy.com -  Canvas')
 root.geometry("1920x1080")
@@ -122,7 +129,7 @@ def create_adj_matrix(m, n, cells):
 
 
 
-def create_circle(x, y, r, canvas): # center x,y, radius
+def create_circle(x, y, r, canvas, goal, start): # center x,y, radius
     x0 = x - r
     y0 = y - r
     x1 = x + r
@@ -131,24 +138,31 @@ def create_circle(x, y, r, canvas): # center x,y, radius
     canvas.tag_bind(c, "<Enter>", handle_enter_vertex)
     canvas.tag_bind(c, "<Leave>", handle_leave_vertex)
     # Hold vertex in array
-    v = Vertex(c, x, y, False, False, 0, 0)
+    v = Vertex(c, x, y, goal, start, 0, 0)
     vertices.append(v)
 
     return c
 
 # From adjacency matrix draw the graph O(n^2)
-def display_grid(matrix, m, n): # n = dim of matrix n * n
+def display_grid(matrix, m, n, goal_pos, start_pos): # n = dim of matrix n * n
     for i in range(0, (n + 1)):
         for j in range(0, (m + 1)):
-            create_circle(j * 20 + 100, i * 20 + 100, 5,  my_canvas)
+            goal = False
+            start = False
+            if (j + 1, i + 1) == goal_pos:
+                goal = True
+            if (j + 1, i + 1) == start_pos:
+                start = True
+            create_circle(j * SPACEING_X + PADDING_X, i * SPACEING_Y + PADDING_Y, NODE_RADIUS,  my_canvas, goal, start)   
+            
     for k in range(0, (m + 1) * (n + 1)):
         for q in range(k, (m + 1) * (n + 1)):
             if(matrix[k][q] == 1):
                 # draw line from vertex i to vertex j
-                my_canvas.create_line((k % 5) * 20 + 100, 
-                                    math.floor(k / 5) * 20 + 100, 
-                                    (q % 5) * 20 + 100, 
-                                    math.floor(q / 5) * 20 + 100)
+                my_canvas.create_line((k % 5) * SPACEING_X + PADDING_X, 
+                                    math.floor(k / 5) * SPACEING_Y + PADDING_Y, 
+                                    (q % 5) * SPACEING_X + PADDING_X, 
+                                    math.floor(q / 5) * SPACEING_Y + PADDING_Y)
 
 test_cells = [(1,1,0),
             (1,2,1),
@@ -163,6 +177,6 @@ test_cells = [(1,1,0),
             (4,2,1),
             (4,3,0)]
 
-display_grid(create_adj_matrix(4,3, test_cells), 4, 3)
+display_grid(create_adj_matrix(4,3, test_cells), 4, 3, (2,1), (2,4))
 
 root.mainloop()
