@@ -85,22 +85,36 @@ def find_middle_edges(vertex_num):
 
 
 #Types: Tuple: start, Tuple end, int m, int n, Array[Tuple(x,y,z)]: 
-def create_adj_matrix(start, end, m, n, cells):
+def create_adj_matrix(m, n, cells):
     matrix = []
     # (m) * (start(y) - 1) + (start(x) - 1) = index of vertex in vertices[]
     # (m) * end(y) + (end(x) - 1) = index of end vertex
-    vertices[m * (start[1] - 1) + (start[0] - 1)].start = True
-    vertices[m * (end[1] - 1) + (end[0] - 1)].end = True
+    """ vertices[m * (start[1] - 1) + (start[0] - 1)].start = True
+    vertices[m * (end[1] - 1) + (end[0] - 1)].end = True """
     
     for i in range(0, (m + 1) * (n + 1)):
         row = []
         for j in range(0, (m + 1) * (n + 1)):
-            if (i == 6 and j in find_middle_edges(i)):
-                row.append(1)
-            else:
                 row.append(0)
-            
         matrix.append(row)
+    
+    # matrix is init with all 0's
+
+    for item in cells:
+        x = item[0] - 1 
+        y = item[1] - 1
+        blocked = item[2]
+        # Find vertex id from (x, y)
+        vid = y * m + x
+        if not blocked:
+            matrix[vid][vid + 1] = 1
+            matrix[vid][vid + m] = 1
+            matrix[vid][vid + m + 1] = 1
+            matrix[vid + m][vid + 1] = 1
+            matrix[vid + m][vid + m + 1] = 1
+            matrix[vid + 1][vid + m + 1] = 1
+        else:
+            pass
 
     return matrix
 
@@ -134,6 +148,19 @@ def display_grid(matrix, m, n): # n = dim of matrix n * n
                                     (q % 5) * 20 + 100, 
                                     math.floor(q / 5) * 20 + 100)
 
-display_grid(create_adj_matrix(4,3), 4, 3)
+test_cells = [(1,1,0),
+            (1,2,1),
+            (1,3,0),
+            (2,1,0),
+            (2,2,1),
+            (2,3,0),
+            (3,1,0),
+            (3,2,0),
+            (3,3,0),
+            (4,1,0),
+            (4,2,1),
+            (4,3,0)]
+
+display_grid(create_adj_matrix(4,3, test_cells), 4, 3)
 
 root.mainloop()
