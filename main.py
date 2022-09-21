@@ -56,48 +56,11 @@ def handle_leave_vertex(event):
     # clear the label text
     pass
 
-# Not needed, just for testing
-def find_middle_edges(vertex_num):
-    edges = []
-
-    top_left = vertex_num - 6
-    top = top_left + 1
-    top_right = top + 1
-    left = vertex_num - 1
-    right = vertex_num + 1
-    bot_left = left * 2
-    bot = bot_left + 1
-    bot_right = bot + 1
-
-    edges.append(top_left)
-    edges.append(top)
-    edges.append(top_right)
-    edges.append(left)
-    edges.append(right)
-    edges.append(bot_left)
-    edges.append(bot)
-    edges.append(bot_right)
-
-    return edges
-
 # TODO: Refactor to use data from input file
-# How to create matrix from info like  1 1 0
-# -> cell 1, 1 is unblocked
-# -> vertex 0 is connected to 1, 5, 6
-# -> 5 is connected to 1
-# 1 2 1 -> cell 1 2 is blocked
-# -> just dont connect vertex 5 to anything?
-# when a cell is unblocked create all the edges
-# this wont cause overlap cuz you will replace a 1 with a 1 which is fine
 
-
-#Types: Tuple: start, Tuple end, int m, int n, Array[Tuple(x,y,z)]: 
+#Types: int m, int n, Array[Tuple(x,y,z)]: 
 def create_adj_matrix(m, n, cells):
     matrix = []
-    # (m) * (start(y) - 1) + (start(x) - 1) = index of vertex in vertices[]
-    # (m) * end(y) + (end(x) - 1) = index of end vertex
-    """ vertices[m * (start[1] - 1) + (start[0] - 1)].start = True
-    vertices[m * (end[1] - 1) + (end[0] - 1)].end = True """
     
     for i in range(0, (m + 1) * (n + 1)):
         row = []
@@ -128,7 +91,7 @@ def create_adj_matrix(m, n, cells):
     return matrix
 
 
-
+# Arguments: x pos, y pos, r radius, goal (x, y), start (x, y)
 def create_circle(x, y, r, canvas, goal, start): # center x,y, radius
     x0 = x - r
     y0 = y - r
