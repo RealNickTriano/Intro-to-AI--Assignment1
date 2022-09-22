@@ -130,11 +130,12 @@ def display_grid(matrix, m, n, goal_pos, start_pos): # n = dim of matrix n * n
     for k in range(0, (m + 1) * (n + 1)):
         for q in range(k, (m + 1) * (n + 1)):
             if(matrix[k][q] == 1):
+                mytag = "({},{})".format(k,q)
                 # draw line from vertex i to vertex j
                 my_canvas.create_line((k % 5) * SPACEING_X + PADDING_X, 
                                     math.floor(k / 5) * SPACEING_Y + PADDING_Y, 
                                     (q % 5) * SPACEING_X + PADDING_X, 
-                                    math.floor(q / 5) * SPACEING_Y + PADDING_Y, width = LINEWIDTH)
+                                    math.floor(q / 5) * SPACEING_Y + PADDING_Y, width = LINEWIDTH, tags=mytag)
 
 test_cells = [(1,1,0),
             (1,2,1),
@@ -150,5 +151,11 @@ test_cells = [(1,1,0),
             (4,3,0)]
 
 display_grid(create_adj_matrix(4,3, test_cells), 4, 3, (2,1), (2,4))
+
+# This is how we change line color
+# Here the line between vertex 1 and 2 is changed to red
+# So, we maintain a list of the path A* takes
+# then change the edges to show the final path
+my_canvas.itemconfigure('(1,2)', fill='red')
 
 root.mainloop()
