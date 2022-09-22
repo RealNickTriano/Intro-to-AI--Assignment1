@@ -1,4 +1,5 @@
 import math
+from textwrap import fill
 from Vertex import Vertex
 from tkinter import *
 
@@ -8,6 +9,7 @@ PADDING_Y = 50
 SPACEING_X = 50
 SPACEING_Y = 50
 NODE_RADIUS = 10
+LINEWIDTH = 2
 
 root = Tk()
 root.title('Codemy.com -  Canvas')
@@ -91,13 +93,20 @@ def create_adj_matrix(m, n, cells):
     return matrix
 
 
-# Arguments: x pos, y pos, r radius, goal (x, y), start (x, y)
+# Arguments: x pos, y pos, r radius, goal bool, start bool
 def create_circle(x, y, r, canvas, goal, start): # center x,y, radius
     x0 = x - r
     y0 = y - r
     x1 = x + r
     y1 = y + r
-    c = canvas.create_oval(x0, y0, x1, y1, fill='#000')
+    if goal and start:
+        c = canvas.create_oval(x0, y0, x1, y1, fill='purple')
+    elif goal:
+        c = canvas.create_oval(x0, y0, x1, y1, fill='blue')
+    elif start:
+        c = canvas.create_oval(x0, y0, x1, y1, fill='red')
+    else:
+        c = canvas.create_oval(x0, y0, x1, y1, fill='#000')
     canvas.tag_bind(c, "<Enter>", handle_enter_vertex)
     canvas.tag_bind(c, "<Leave>", handle_leave_vertex)
     # Hold vertex in array
@@ -125,7 +134,7 @@ def display_grid(matrix, m, n, goal_pos, start_pos): # n = dim of matrix n * n
                 my_canvas.create_line((k % 5) * SPACEING_X + PADDING_X, 
                                     math.floor(k / 5) * SPACEING_Y + PADDING_Y, 
                                     (q % 5) * SPACEING_X + PADDING_X, 
-                                    math.floor(q / 5) * SPACEING_Y + PADDING_Y)
+                                    math.floor(q / 5) * SPACEING_Y + PADDING_Y, width = LINEWIDTH)
 
 test_cells = [(1,1,0),
             (1,2,1),
