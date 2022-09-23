@@ -92,7 +92,16 @@ def create_adj_matrix(m, n, cells):
 
     return matrix
 
+# TODO
+def getVertexid(tuple):
+    id = 0
+    (1,1)
+    return id
 
+def getVertexCoords(vid):
+    vTuple = ()
+
+    return vTuple
 # Arguments: x pos, y pos, r radius, goal bool, start bool
 def create_circle(x, y, r, canvas, goal, start): # center x,y, radius
     x0 = x - r
