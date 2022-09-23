@@ -1,4 +1,5 @@
 import math
+from re import M
 from textwrap import fill
 from Vertex import Vertex
 from tkinter import *
@@ -94,16 +95,16 @@ def create_adj_matrix(m, n, cells):
 
     return matrix
 
-# TODO
-def getVertexid(tuple):
-    id = 0
-    (1,1)
+# Converts coordinates of node to node id
+def getVertexid(coords, m):
+    id = coords[1] * (m + 1) + coords[0]
     return id
 
-def getVertexCoords(vid):
-    vTuple = ()
+# Converts id to coordinates
+def getVertexCoords(vid, m):
+    coords = (vid % (m + 1), math.floor(vid / (m + 1)))
+    return coords
 
-    return vTuple
 # Arguments: x pos, y pos, r radius, goal bool, start bool
 def create_circle(x, y, r, canvas, goal, start): # center x,y, radius
     x0 = x - r
@@ -168,5 +169,9 @@ display_grid(create_adj_matrix(4,3, test_cells), 4, 3, (2,1), (2,4))
 # So, we maintain a list of the path A* takes
 # then change the edges to show the final path
 my_canvas.itemconfigure('(1,2)', fill='red')
+
+print('TESTING')
+print(getVertexCoords(12, 4))
+print(getVertexid((2,2), 4))
 
 root.mainloop()
