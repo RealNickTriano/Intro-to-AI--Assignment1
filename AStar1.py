@@ -7,7 +7,8 @@ class Vertex():
         self.f = 0
         self.g = 0
         self.h = 0
-def Solve(startingPoint,endPoint,dimensions):
+
+def Solve(startingPoint, endPoint, dimensions):
     start = Vertex(None, startingPoint)
     start.f =0
     start.g=0
@@ -26,6 +27,20 @@ def Solve(startingPoint,endPoint,dimensions):
     fringeList.append(start)
     i = 0
     fringeSize = len(fringeList)
+    # while fringlist is not empty do:
+    """
+    pop first fringe item
+    if its goal return path found
+
+    otherwise
+    closed.append current
+    for s' in getSuccessors(s):
+        if s' not in closed then
+            if s' not in fringe then:
+                g(s') = infinity
+                parent(s') = null
+            updateVertex(s,s')
+    """
     for i in range(fringeSize):
         children =[]
         position = fringeList[0]
