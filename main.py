@@ -11,6 +11,8 @@ SPACEING_Y = 50
 NODE_RADIUS = 10
 LINEWIDTH = 2
 
+FILE_PATH = 'demo.txt'
+
 root = Tk()
 root.title('Codemy.com -  Canvas')
 root.geometry("1920x1080")
