@@ -85,11 +85,17 @@ def create_adj_matrix(m, n, cells):
         print(vid)
         if not blocked:
             matrix[vid][vid + 1] = 1
+            matrix[vid + 1][vid] = 1
             matrix[vid][vid + m + 1] = 1
+            matrix[vid + m + 1][vid] = 1
             matrix[vid][vid + m + 2] = 1
+            matrix[vid + m + 2][vid] = 1
             matrix[vid + m + 1][vid + m + 2] = 1
+            matrix[vid + m + 2][vid + m + 1] = 1
             matrix[vid + 1][vid + m + 1] = 1
+            matrix[vid + m + 1][vid + 1] = 1
             matrix[vid + 1][vid + m + 2] = 1
+            matrix[vid + m + 2][vid + 1] = 1
         else:
             pass
 
@@ -240,6 +246,8 @@ def getSuccessors(node, matrix):
     for index, item in enumerate(matrix[node.name]):
         if item == 1:
             succ.append(vertices[index])
+    
+    print('succ')
     print(succ)
     return succ
 
@@ -256,7 +264,7 @@ def Solve(start, end, matrix):
         s = heapq.heappop(fringeList)
         if s[0].goal:
             return True, getPath(s[0])
-        heapq.heappush(closedList, s[0])
+        heapq.heappush(closedList, s[0]) #TODO
         for s_prime in getSuccessors(s[0], matrix):
             if s_prime not in closedList:
                 if s_prime not in fringeList:
