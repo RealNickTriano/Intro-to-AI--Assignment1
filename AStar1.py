@@ -1,33 +1,89 @@
-import math 
-class Vertex():
-    def __init__(self, parent=None, location=None, legal=None):
-        self.parent = parent
-        self.location = location
-        legal=0
-        self.f = 0
-        self.g = 0
-        self.h = 0
+from asyncio.windows_events import NULL
+import math
+import heapq
 
-def Solve(startingPoint, endPoint, dimensions):
-    start = Vertex(None, startingPoint)
-    start.f =0
-    start.g=0
-    start.h=0
-    end=Vertex(None, endPoint)
-    end.f=0
-    end.g=0
-    end.h=0
+def getVertexid(coords, m):
+    id = coords[1] * (m + 1) + coords[0]
+    return id
+
+# Converts id to coordinates
+def getVertexCoords(vid, m):
+    coords = (vid % (m + 1), math.floor(vid / (m + 1)))
+    return coords
+
+
+def getDist(s,s2):
+    a=getVertexCoords(s,4)
+    b=getVertexCoords(s2,4)
+    x1=a[0]
+    y1=a[1]
+    x2=b[0]
+    y2=b[1]
+    xVal=x2-x1
+    yVal=y2-y1
+    d=math.sqrt(pow(xVal,2)+pow(yVal,2))
+    return d
+
+def calculate_g(node, start):
+    a=getVertexCoords(node,4)
+    b=getVertexCoords(start,4)
+    x1=a[0]
+    y1=a[1]
+    x2=b[0]
+    y2=b[1]
+    g = 0
+    g=math.sqrt(2)*min(abs(x2-x1),abs(y2-y1))+max(abs(x2-x1),abs(y2-y1))-min(abs(x2-x1),abs(y2-y1))
+    return g 
+    
+
+def calculate_h(node, end):
+    a=getVertexCoords(node,4)
+    b=getVertexCoords(end,4)
+    x1=a[0]
+    y1=a[1]
+    x2=b[0]
+    y2=b[1]
+    h = 0
+    h=math.sqrt(2)*min(abs(x2-x1),abs(y2-y1))+max(abs(x2-x1),abs(y2-y1))-min(abs(x2-x1),abs(y2-y1))
+    return h 
+
+def getPath(node):
+    path =[node]
+    current = node
+    while current.parent is not current:
+        path.append(current.parent)
+        current = current.parent
+    return path[::-1]
+
+def getSuccessors(node):
+    succ = []
+    for item in matrix[node.name]:
+        succ.append(item)
+    return succ
+
+def Solve(start, end):
+    start.g_value = 0
+    start.parent = start
     fringeList=[]
+    heapq.heapify(fringeList)
+    start.h_value = calculate_h(start, end)
+    heapq.heappush(fringeList, (start, -1 * start.g_value + start.h_value))
     closedList=[]
-    ##TODO need to make a relation from numeric representation of nodes to x,y coordinates 
-   # digUr = position / dimensions
-    #digUL = position / dimensions
-   # digDR = position / dimensions
-    #digDL = position / dimensions
-    fringeList.append(start)
-    i = 0
-    fringeSize = len(fringeList)
-    # while fringlist is not empty do:
+    heapq.heapify(closedList)
+    while len(fringeList) != 0:
+        s = heapq.heappop(fringeList)
+        if s.goal:
+            return True, getPath(s)
+        heapq.heappush(closedList, s)
+        for s_prime in getSuccessors(s):
+            if s_prime not in closedList:
+                if s_prime not in fringeList:
+                    s_prime.g_value = math.inf
+                    s_prime.parent = NULL
+                UpdateVertex(s, s_prime, fringeList)
+    
+    return False, []
+    
     """
     pop first fringe item
     if its goal return path found
@@ -52,13 +108,6 @@ def Solve(startingPoint, endPoint, dimensions):
         fringeList.pop(placeHolder1)
         closedList.append(position)
 
-        if position == endPoint:
-            path =[]
-            current = position
-            while current is not None:
-                path.append(current.location)
-                current = current.parent
-            return path[::-1]
         for nextVertex in[up, down, left, right, digUR, digUL, digDR, digDL]:
             node_position = (position.location[0] + nextVertex[0], position.position[1] + nextVertex[1])
             # TODO make user this works with the way were reciving input
@@ -80,3 +129,12 @@ def Solve(startingPoint, endPoint, dimensions):
                 if child == fringeVertex and child.g > fringeVertex.g:
                     continue
         fringeList.append(child)
+
+def UpdateVertex(s,s2, fringeList):
+    if calculate_g(s) + getDist(s,s2) < calculate_g(s2):
+        s2.parent = s
+        if s2 in fringeList:
+            fringeList.remove(s2)
+            heapq.heapify(fringeList)
+        heapq.heappush(fringeList, (s2, -1 * calculate_g(s2) + calculate_h(s2)))
+    

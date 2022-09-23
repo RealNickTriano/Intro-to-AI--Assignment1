@@ -3,6 +3,7 @@ from re import M
 from textwrap import fill
 from Vertex import Vertex
 from tkinter import *
+import heapq
 
 
 PADDING_X = 50
@@ -21,6 +22,7 @@ root.geometry("1920x1080")
 my_canvas = Canvas(root, width=1920, height=1080, bg="white")
 my_canvas.pack(pady=20)
 vertices = []
+matrix = []
 
 # --------- Create labels ---------------
 
@@ -65,8 +67,6 @@ def handle_leave_vertex(event):
 
 #Types: int m, int n, Array[Tuple(x,y,z)]: 
 def create_adj_matrix(m, n, cells):
-    matrix = []
-    
     for i in range(0, (m + 1) * (n + 1)):
         row = []
         for j in range(0, (m + 1) * (n + 1)):
@@ -97,7 +97,7 @@ def create_adj_matrix(m, n, cells):
 
 # Converts coordinates of node to node id
 def getVertexid(coords, m):
-    id = coords[1] * (m + 1) + coords[0]
+    id = (coords[1] -  1) * (m + 1) + (coords[0] - 1)
     return id
 
 # Converts id to coordinates
@@ -163,15 +163,113 @@ test_cells = [(1,1,0),
             (4,3,0)]
 
 display_grid(create_adj_matrix(4,3, test_cells), 4, 3, (2,1), (2,4))
+print(getVertexid((2,4), 4))
 
 # This is how we change line color
 # Here the line between vertex 1 and 2 is changed to red
 # So, we maintain a list of the path A* takes
 # then change the edges to show the final path
-my_canvas.itemconfigure('(1,2)', fill='red')
+#my_canvas.itemconfigure('(1,2)', fill='red')
 
-print('TESTING')
-print(getVertexCoords(12, 4))
-print(getVertexid((2,2), 4))
+
+#-----------------------------------------------------
+
+def UpdateVertex(s,s2, fringeList, start):
+    if calculate_g(s, start) + getDist(s,s2) < calculate_g(s2, start):
+        s2.parent = s
+        if s2 in fringeList:
+            fringeList.remove(s2)
+            heapq.heapify(fringeList)
+        heapq.heappush(fringeList, (s2, -1 * calculate_g(s2, start) + calculate_h(s2, start)))
+
+""" def getVertexid(coords, m):
+    id = coords[1] * (m + 1) + coords[0]
+    return id
+
+# Converts id to coordinates
+def getVertexCoords(vid, m):
+    coords = (vid % (m + 1), math.floor(vid / (m + 1)))
+    return coords """
+
+
+def getDist(s,s2):
+    a=getVertexCoords(s.name,4)
+    b=getVertexCoords(s2.name,4)
+    x1=a[0]
+    y1=a[1]
+    x2=b[0]
+    y2=b[1]
+    xVal=x2-x1
+    yVal=y2-y1
+    d=math.sqrt(pow(xVal,2)+pow(yVal,2))
+    return d
+
+def calculate_g(node, start):
+    a=getVertexCoords(node.name,4)
+    b=getVertexCoords(start.name,4)
+    x1=a[0]
+    y1=a[1]
+    x2=b[0]
+    y2=b[1]
+    g = 0
+    g=math.sqrt(2)*min(abs(x2-x1),abs(y2-y1))+max(abs(x2-x1),abs(y2-y1))-min(abs(x2-x1),abs(y2-y1))
+    return g 
+    
+
+def calculate_h(node, end):
+    a=getVertexCoords(node.name,4)
+    b=getVertexCoords(end.name,4)
+    x1=a[0]
+    y1=a[1]
+    x2=b[0]
+    y2=b[1]
+    h = 0
+    h=math.sqrt(2)*min(abs(x2-x1),abs(y2-y1))+max(abs(x2-x1),abs(y2-y1))-min(abs(x2-x1),abs(y2-y1))
+    return h 
+
+def getPath(node):
+    path =[node]
+    current = node
+    while current.parent is not current:
+        path.append(current.parent)
+        current = current.parent
+    return path[::-1]
+
+def getSuccessors(node, matrix):
+    succ = []
+    for index, item in enumerate(matrix[node.name]):
+        if item == 1:
+            succ.append(vertices[index])
+    print(succ)
+    return succ
+
+def Solve(start, end, matrix):
+    start.g_value = 0
+    start.parent = start
+    fringeList=[]
+    heapq.heapify(fringeList)
+    start.h_value = calculate_h(start, end)
+    heapq.heappush(fringeList, (start, -1 * start.g_value + start.h_value))
+    closedList=[]
+    heapq.heapify(closedList)
+    while len(fringeList) != 0:
+        s = heapq.heappop(fringeList)
+        if s[0].goal:
+            return True, getPath(s[0])
+        heapq.heappush(closedList, s[0])
+        for s_prime in getSuccessors(s[0], matrix):
+            if s_prime not in closedList:
+                if s_prime not in fringeList:
+                    s_prime.g_value = math.inf
+                    s_prime.parent = None
+                UpdateVertex(s[0], s_prime, fringeList ,start)
+    
+    return False, []
+
+#-------------------------------------------------------
+# Call with start and goal
+result, path = Solve(vertices[getVertexid((2,4), 4)], vertices[getVertexid((2,1), 4)], matrix)
+print(result)
+print(path)
 
 root.mainloop()
