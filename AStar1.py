@@ -1,79 +1,67 @@
-#!usr/bin/env python
+import math 
+class Vertex():
+    def __init__(self, parent=None, location=None, legal=None):
+        self.parent = parent
+        self.location = location
+        legal=0
+        self.f = 0
+        self.g = 0
+        self.h = 0
+def Solve(startingPoint,endPoint,dimensions):
+    start = Vertex(None, startingPoint)
+    start.f =0
+    start.g=0
+    start.h=0
+    end=Vertex(None, endPoint)
+    end.f=0
+    end.g=0
+    end.h=0
+    fringeList=[]
+    closedList=[]
+    ##TODO need to make a relation from numeric representation of nodes to x,y coordinates 
+   # digUr = position / dimensions
+    #digUL = position / dimensions
+   # digDR = position / dimensions
+    #digDL = position / dimensions
+    fringeList.append(start)
+    i = 0
+    fringeSize = len(fringeList)
+    for i in range(fringeSize):
+        children =[]
+        position = fringeList[0]
+        placeHolder1 = 0
+        for index, item in enumerate(fringeList):
+            if item.f < position.f:
+                position = item
+                placeHolder1 = index
+        fringeList.pop(placeHolder1)
+        closedList.append(position)
 
-#from Queue import PriorityQueue
-
-class State(object):
-        def __init__(self, value, parent, start=0, goal=0):
-            self.children = []
-            self.parent = parent
-            self.value = value
-            self.dist = 0
-            if parent:
-                self.path = parent.path[:]
-                self.path.append(value)
-                self.start = parent.start
-                self.goal = parent.goal
-            else:
-                self.path = [value]
-                self.start = start
-                self.goal = goal
-                self.solver = solver
-
-        def GetDist(self):
-            pass
-        def CreateChildren(self):
-            pass
-class State_String(State):
-    def __init__(self, value, parent, start=0, goal=0):
-        super().__init__(value, parent, start, goal)
-        self.dist = self.GetDist()
-    def GetDist(self):
-        if self.value == self.goal:
-            return 0
-        dist = 0
-        for i in range(len(self.goal)):
-            letter = self.goal[i]
-            dist += abs(i - self.value.index(letter))
-        return dist
-    def CreateChildren(self):
-        if not self.children:
-            for i in xrange(len(self.goal) - 1):
-                val= self.value
-                val = val[:i] + val[i+1] +val[i] + val[i+2]
-                child = State_String(val, self)
-                self.children.append(child)
-
-class AStar_Solver:
-    def __init__(self, start, goal):
-        self.path = []
-        self.visitedQueue = []
-        self.priorityQueue = PriorityQueue()
-        self.start = start
-        self.goal = goal
-    def Solve(self):
-        startState = State_String(self.start, 0, self.start, self.goal)
-        count = 0
-        self.priorityQueue.put((0, count, startState))
-        while(not self.path and self.priorityQueue.qsize()):
-            closestChild = self.priorityQueue.get()[2]
-            closestChild.CreateChildren()
-            self.visitedQueue.append(closestChild.value)
-            for child in closestChild.children:
-                if child.value not in self.visitedQueue:
-                    count+=1
-                    if not child.dist:
-                        self.path = child.path
-                        break
-                    self.priorityQueue.put((child.dist, count, child))
-        if not self.path:
-            print ("goal" + self.goal + "DNE")
-        return self.path
-
-if __name__ == "__main__":
-    start1 = "hma"
-    goal1 = "ham"
-    print("starting...")
-    a = AStar_Solver(start1, goal1)
-    a.Solve()
-    for i in xrange(len(a.path)):
-        print ("%d) " %i + a.path[i])
+        if position == endPoint:
+            path =[]
+            current = position
+            while current is not None:
+                path.append(current.location)
+                current = current.parent
+            return path[::-1]
+        for nextVertex in[up, down, left, right, digUR, digUL, digDR, digDL]:
+            node_position = (position.location[0] + nextVertex[0], position.position[1] + nextVertex[1])
+            # TODO make user this works with the way were reciving input
+            if nextVertex.legal == 0: 
+                continue
+            destination = Vertex(position, node_position)
+            children.append(destination)
+        for child in children:
+            for childClosed in closedList:
+                if child == childClosed:
+                    continue
+        if child.location == digUr or digUL or digDR or digDL:
+            child.g = math.sqrt(2)
+        else:
+            child.g = position.g +1
+        child.h = ((child.location[0] - end.location[0]) + (child.location[1] - end.location[1]))
+        child.f = child.g + child.h
+        for fringeVertex in fringeList:
+                if child == fringeVertex and child.g > fringeVertex.g:
+                    continue
+        fringeList.append(child)
