@@ -76,13 +76,11 @@ def create_adj_matrix(m, n, cells):
     # matrix is init with all 0's
 
     for item in cells:
-        print(item)
         x = item[0] - 1 
         y = item[1] - 1
         blocked = item[2]
         # Find vertex id from (x, y)
         vid = y * (m + 1) + x
-        print(vid)
         if not blocked:
             matrix[vid][vid + 1] = 1
             matrix[vid + 1][vid] = 1
@@ -154,6 +152,7 @@ def display_grid(matrix, m, n, goal_pos, start_pos): # n = dim of matrix n * n
                                     math.floor(k / 5) * SPACEING_Y + PADDING_Y, 
                                     (q % 5) * SPACEING_X + PADDING_X, 
                                     math.floor(q / 5) * SPACEING_Y + PADDING_Y, width = LINEWIDTH, tags=mytag)
+        
 
 test_cells = [(1,1,0),
             (1,2,1),
@@ -169,7 +168,8 @@ test_cells = [(1,1,0),
             (4,3,0)]
 
 display_grid(create_adj_matrix(4,3, test_cells), 4, 3, (2,1), (2,4))
-print(getVertexid((2,4), 4))
+for item in vertices:
+    print(item.name)
 
 # This is how we change line color
 # Here the line between vertex 1 and 2 is changed to red
@@ -182,11 +182,17 @@ print(getVertexid((2,4), 4))
 
 def UpdateVertex(s,s2, fringeList, start):
     if calculate_g(s, start) + getDist(s,s2) < calculate_g(s2, start):
+        print('Found better path to s`, setting s` parent to s...')
         s2.parent = s
         if s2 in fringeList:
+            print('s` found in fringe list.\nRemoving from list and reheapifying...')
             fringeList.remove(s2)
             heapq.heapify(fringeList)
-        heapq.heappush(fringeList, (s2, -1 * calculate_g(s2, start) + calculate_h(s2, start)))
+        s2.g_value = calculate_g(s2, start)
+        s2.h_value = calculate_h(s2, start)
+        s2.updateFValue()
+        heapq.heappush(fringeList, (s2, s2.g_value + s2.h_value))
+        print('Pushed s` to fringe: {}, {}'.format(s2.name, s2.g_value + s2.h_value))
 
 """ def getVertexid(coords, m):
     id = coords[1] * (m + 1) + coords[0]
@@ -243,12 +249,14 @@ def getPath(node):
 
 def getSuccessors(node, matrix):
     succ = []
+    print('Getting Successors for node: {} matrix row: {}'.format(node.name, matrix[node.name]))
     for index, item in enumerate(matrix[node.name]):
         if item == 1:
-            succ.append(vertices[index])
-    
+            succ.append(vertices[index - 1])
+    #TODO: Strange interaction here
     print('succ')
-    print(succ)
+    for s in succ:
+        print(s.name)
     return succ
 
 def Solve(start, end, matrix):
@@ -257,26 +265,34 @@ def Solve(start, end, matrix):
     fringeList=[]
     heapq.heapify(fringeList)
     start.h_value = calculate_h(start, end)
-    heapq.heappush(fringeList, (start, -1 * start.g_value + start.h_value))
+    start.updateFValue() # Not sure if this works
+    heapq.heappush(fringeList, (start, start.g_value + start.h_value))
     closedList=[]
     heapq.heapify(closedList)
     while len(fringeList) != 0:
         s = heapq.heappop(fringeList)
+        print('Popped from fringe: {} , {}'.format(s[0].name, s[1]))
         if s[0].goal:
             return True, getPath(s[0])
-        heapq.heappush(closedList, s[0]) #TODO
+        heapq.heappush(closedList, s[0])
+        print('Pushed onto closed list: {}'.format(s[0].name))
         for s_prime in getSuccessors(s[0], matrix):
             if s_prime not in closedList:
+                print('{} not found in closed list'.format(s_prime.name))
                 if s_prime not in fringeList:
+                    print('{} not found in fringe...\nSetting g = inf and parent = None'.format(s_prime.name))
                     s_prime.g_value = math.inf
                     s_prime.parent = None
+                print('Calling updateVertex(s = {} , s` = {} , fringe =  {} , start = {})'.format(s[0].name, s_prime.name, fringeList, start.name))
                 UpdateVertex(s[0], s_prime, fringeList ,start)
     
     return False, []
 
 #-------------------------------------------------------
 # Call with start and goal
-result, path = Solve(vertices[getVertexid((2,4), 4)], vertices[getVertexid((2,1), 4)], matrix)
+result, path = Solve(vertices[getVertexid((2,4), 4) - 1], vertices[getVertexid((2,1), 4)], matrix)
+#print('Vid: {}'.format(vertices[getVertexid((2,4), 4) - 1].name))
+print('RESULTS:')
 print(result)
 print(path)
 
