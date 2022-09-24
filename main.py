@@ -44,13 +44,13 @@ lbl_f_value.place(relx=0.7, rely=0.95, anchor='center')
 # --------- End Create labels ---------------
 
 def updateLabels(v):
-    lbl_x_value.config(text= 'x: ' + str(v.x_pos))
-    lbl_y_value.config(text= 'y: ' + str(v.y_pos))
+    lbl_x_value.config(text= 'x: ' + '{:.2f}'.format(v.x_pos))
+    lbl_y_value.config(text= 'y: ' + '{:.2f}'.format(v.y_pos))
     lbl_goal.config(text= 'goal: ' + str(v.goal))
     lbl_start.config(text= 'start: ' + str(v.start))
-    lbl_h_value.config(text= 'h: ' + str(v.h_value))
-    lbl_g_value.config(text= 'g: ' + str(v.g_value))
-    lbl_f_value.config(text= 'f: ' + str(v.f_value))
+    lbl_h_value.config(text= 'h: ' + '{:.2f}'.format(v.h_value))
+    lbl_g_value.config(text= 'g: ' + '{:.2f}'.format(v.g_value))
+    lbl_f_value.config(text= 'f: ' + '{:.2f}'.format(v.f_value))
 
 def handle_enter_vertex(event):
     # find the canvas item below mouse cursor
@@ -107,6 +107,7 @@ def getVertexid(coords, m):
 # Converts id to coordinates
 def getVertexCoords(vid, m):
     coords = (vid % (m + 1), math.floor(vid / (m + 1)))
+    #print('COORDS FOR {}: {}'.format(vid, coords))
     return coords
 
 # Arguments: x pos, y pos, r radius, goal bool, start bool
@@ -181,7 +182,7 @@ for item in vertices:
 #-----------------------------------------------------
 
 def UpdateVertex(s,s2, fringeList, start):
-    if calculate_g(s, start) + getDist(s,s2) < calculate_g(s2, start):
+    if calculate_g(s, start) + getDist(s,s2) < s2.g_value:
         print('Found better path to s`, setting s` parent to s...')
         s2.parent = s
         if s2 in fringeList:
@@ -205,8 +206,8 @@ def getVertexCoords(vid, m):
 
 
 def getDist(s,s2):
-    a=getVertexCoords(s.name,4)
-    b=getVertexCoords(s2.name,4)
+    a=getVertexCoords(s.name - 1,4)
+    b=getVertexCoords(s2.name - 1,4)
     x1=a[0]
     y1=a[1]
     x2=b[0]
@@ -216,9 +217,17 @@ def getDist(s,s2):
     d=math.sqrt(pow(xVal,2)+pow(yVal,2))
     return d
 
+# WRONG: g is actual cost from start to node this uses h() calc which is an estimation
+# I dont know how to calc this
 def calculate_g(node, start):
-    a=getVertexCoords(node.name,4)
-    b=getVertexCoords(start.name,4)
+    """ current = node
+    g = 0
+    while current.parent != current:
+        g += current.parent.g_value
+        current = current.parent """
+        
+    a=getVertexCoords(node.name - 1,4)
+    b=getVertexCoords(start.name - 1,4)
     x1=a[0]
     y1=a[1]
     x2=b[0]
@@ -229,14 +238,16 @@ def calculate_g(node, start):
     
 
 def calculate_h(node, end):
-    a=getVertexCoords(node.name,4)
-    b=getVertexCoords(end.name,4)
+    a=getVertexCoords(node.name - 1,4)
+    b=getVertexCoords(end.name - 1,4)
     x1=a[0]
     y1=a[1]
     x2=b[0]
     y2=b[1]
     h = 0
-    h=math.sqrt(2)*min(abs(x2-x1),abs(y2-y1))+max(abs(x2-x1),abs(y2-y1))-min(abs(x2-x1),abs(y2-y1))
+    h=math.sqrt(2)*(min(abs(x2-x1),abs(y2-y1)) 
+        + max(abs(x2-x1),abs(y2-y1))
+        - min(abs(x2-x1),abs(y2-y1)))
     return h 
 
 def getPath(node):
@@ -249,14 +260,14 @@ def getPath(node):
 
 def getSuccessors(node, matrix):
     succ = []
-    print('Getting Successors for node: {} matrix row: {}'.format(node.name, matrix[node.name]))
-    for index, item in enumerate(matrix[node.name]):
+    print('Getting Successors for node: {} matrix row: {}'.format(node.name - 1, matrix[node.name - 1]))
+    for index, item in enumerate(matrix[node.name - 1]):
         if item == 1:
-            succ.append(vertices[index - 1])
+            succ.append(vertices[index])
     #TODO: Strange interaction here
-    print('succ')
+    """ print('succ')
     for s in succ:
-        print(s.name)
+        print(s.name - 1)"""
     return succ
 
 def Solve(start, end, matrix):
@@ -271,26 +282,26 @@ def Solve(start, end, matrix):
     heapq.heapify(closedList)
     while len(fringeList) != 0:
         s = heapq.heappop(fringeList)
-        print('Popped from fringe: {} , {}'.format(s[0].name, s[1]))
+        print('Popped from fringe: {} , {}'.format(s[0].name - 1, s[1]))
         if s[0].goal:
             return True, getPath(s[0])
         heapq.heappush(closedList, s[0])
-        print('Pushed onto closed list: {}'.format(s[0].name))
+        print('Pushed onto closed list: {}'.format(s[0].name - 1))
         for s_prime in getSuccessors(s[0], matrix):
             if s_prime not in closedList:
-                print('{} not found in closed list'.format(s_prime.name))
+                print('{} not found in closed list'.format(s_prime.name - 1))
                 if s_prime not in fringeList:
-                    print('{} not found in fringe...\nSetting g = inf and parent = None'.format(s_prime.name))
+                    print('{} not found in fringe...\nSetting g = inf and parent = None'.format(s_prime.name - 1))
                     s_prime.g_value = math.inf
                     s_prime.parent = None
-                print('Calling updateVertex(s = {} , s` = {} , fringe =  {} , start = {})'.format(s[0].name, s_prime.name, fringeList, start.name))
+                #print('Calling updateVertex(s = {} , s` = {} , fringe =  {} , start = {})'.format(s[0].name - 1, s_prime.name - 1, fringeList, start.name - 1))
                 UpdateVertex(s[0], s_prime, fringeList ,start)
     
     return False, []
 
 #-------------------------------------------------------
 # Call with start and goal
-result, path = Solve(vertices[getVertexid((2,4), 4) - 1], vertices[getVertexid((2,1), 4)], matrix)
+result, path = Solve(vertices[getVertexid((2,4), 4)], vertices[getVertexid((2,1), 4)], matrix)
 #print('Vid: {}'.format(vertices[getVertexid((2,4), 4) - 1].name))
 print('RESULTS:')
 print(result)
