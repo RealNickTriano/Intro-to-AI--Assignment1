@@ -16,8 +16,8 @@ class Vertex:
         self.f_value = h + g
         self.parent = parent
 
-    def __eq__(self, __o: object) -> bool:
-        return isinstance(__o, Vertex) and __o.name == self.name
+    """ def __eq__(self, __o: object) -> bool:
+        return isinstance(__o, Vertex) and __o.name == self.name """
     
     def __lt__(self, __o: object) -> bool:
         return isinstance(__o, Vertex) and __o.name < self.name

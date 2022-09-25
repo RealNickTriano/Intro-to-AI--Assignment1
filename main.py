@@ -1,7 +1,4 @@
 import math
-from re import M
-from textwrap import fill
-from unicodedata import name
 from Vertex import Vertex
 from tkinter import *
 import heapq
@@ -183,7 +180,7 @@ for item in vertices:
 #-----------------------------------------------------
 
 def UpdateVertex(s,s2, fringeList, start, end):
-    if calculate_g(s, start) + getDist(s,s2) < s2.g_value:
+    if s.g_value + getDist(s,s2) < s2.g_value:
         print('Found better path to s`, setting s` parent to s...')
         s2.parent = s
         if s2 in fringeList:
@@ -222,26 +219,21 @@ def getDist(s,s2):
         print('sqrt(2) Cost to go From: {} To: {}'.format(s.name - 1, s2.name - 1))
         return math.sqrt(2)
 
-# WRONG: g is actual cost from start to node this uses h() calc which is an estimation
-# I dont know how to calc this
+#g is actual cost from start to node this uses h() calc which is an estimation
 def calculate_g(node, start):
-    """ current = node
-    g = 0
-    while current.parent != current:
-        g += current.parent.g_value
-        current = current.parent """
+    g = getDist(node, node.parent) + node.parent.g_value
         
-    a=getVertexCoords(node.name - 1,4)
+    """ a=getVertexCoords(node.name - 1,4)
     b=getVertexCoords(start.name - 1,4)
     x1=a[0]
     y1=a[1]
     x2=b[0]
     y2=b[1]
     g = 0
-    g=math.sqrt(2)*min(abs(x2-x1),abs(y2-y1))+max(abs(x2-x1),abs(y2-y1))-min(abs(x2-x1),abs(y2-y1))
-    return g 
+    g=math.sqrt(2)*(min(abs(x2-x1),abs(y2-y1)))+max(abs(x2-x1),abs(y2-y1))-min(abs(x2-x1),abs(y2-y1)) """
+    return g
     
-
+# Estimate of distance from node to goal (end)
 def calculate_h(node, end):
     a=getVertexCoords(node.name - 1,4)
     b=getVertexCoords(end.name - 1,4)
@@ -251,9 +243,7 @@ def calculate_h(node, end):
     x2=b[0]
     y2=b[1]
     h = 0
-    h=math.sqrt(2)*(min(abs(x2-x1),abs(y2-y1)) 
-        + max(abs(x2-x1),abs(y2-y1))
-        - min(abs(x2-x1),abs(y2-y1)))
+    h=math.sqrt(2)*(min(abs(x2-x1),abs(y2-y1))) + max(abs(x2-x1),abs(y2-y1)) - min(abs(x2-x1),abs(y2-y1))
     return h 
 
 def getPath(node):
@@ -276,6 +266,18 @@ def getSuccessors(node, matrix):
         print(s.name - 1)"""
     return succ
 
+def printList(list):
+    for item in list:
+        print(item)
+
+def checkInList(item, fringeList):
+    for x in fringeList:
+        print(item.name - 1, x[1].name - 1)
+        if item.name - 1 == x[1].name - 1:
+            return False
+
+    return True
+
 def Solve(start, end, matrix):
     start.g_value = 0
     start.parent = start
@@ -287,16 +289,21 @@ def Solve(start, end, matrix):
     closedList=[]
     heapq.heapify(closedList)
     while len(fringeList) != 0:
+        printList(fringeList)
         s = heapq.heappop(fringeList)
         print('Popped from fringe: {} , {}'.format(s[1].name - 1, s[0]))
+        print('Fringe:')
+        printList(fringeList)
         if s[1].goal:
             return True, getPath(s[1])
         heapq.heappush(closedList, s[1])
         print('Pushed onto closed list: {}'.format(s[1].name - 1))
+        print('Closed:')
+        printList(closedList)
         for s_prime in getSuccessors(s[1], matrix):
             if s_prime not in closedList:
                 print('{} not found in closed list'.format(s_prime.name - 1))
-                if s_prime not in fringeList:
+                if checkInList(s_prime, fringeList) or len(fringeList) ==  0:
                     print('{} not found in fringe...\nSetting g = inf and parent = None'.format(s_prime.name - 1))
                     s_prime.g_value = math.inf
                     s_prime.parent = None
