@@ -1,6 +1,7 @@
 import math
 from re import M
 from textwrap import fill
+from unicodedata import name
 from Vertex import Vertex
 from tkinter import *
 import heapq
@@ -181,7 +182,7 @@ for item in vertices:
 
 #-----------------------------------------------------
 
-def UpdateVertex(s,s2, fringeList, start):
+def UpdateVertex(s,s2, fringeList, start, end):
     if calculate_g(s, start) + getDist(s,s2) < s2.g_value:
         print('Found better path to s`, setting s` parent to s...')
         s2.parent = s
@@ -190,10 +191,10 @@ def UpdateVertex(s,s2, fringeList, start):
             fringeList.remove(s2)
             heapq.heapify(fringeList)
         s2.g_value = calculate_g(s2, start)
-        s2.h_value = calculate_h(s2, start)
+        s2.h_value = calculate_h(s2, end)
         s2.updateFValue()
-        heapq.heappush(fringeList, (s2, s2.g_value + s2.h_value))
-        print('Pushed s` to fringe: {}, {}'.format(s2.name, s2.g_value + s2.h_value))
+        heapq.heappush(fringeList, (s2.g_value + s2.h_value, s2))
+        print('Pushed s` to fringe: {}, {}'.format(s2.name - 1, s2.g_value + s2.h_value))
 
 """ def getVertexid(coords, m):
     id = coords[1] * (m + 1) + coords[0]
@@ -214,8 +215,12 @@ def getDist(s,s2):
     y2=b[1]
     xVal=x2-x1
     yVal=y2-y1
-    d=math.sqrt(pow(xVal,2)+pow(yVal,2))
-    return d
+    if(xVal == 0 or yVal == 0):
+        print('1 Cost to go From: {} To: {}'.format(s.name - 1, s2.name - 1))
+        return 1
+    else:
+        print('sqrt(2) Cost to go From: {} To: {}'.format(s.name - 1, s2.name - 1))
+        return math.sqrt(2)
 
 # WRONG: g is actual cost from start to node this uses h() calc which is an estimation
 # I dont know how to calc this
@@ -240,6 +245,7 @@ def calculate_g(node, start):
 def calculate_h(node, end):
     a=getVertexCoords(node.name - 1,4)
     b=getVertexCoords(end.name - 1,4)
+    print(a,b)
     x1=a[0]
     y1=a[1]
     x2=b[0]
@@ -277,25 +283,25 @@ def Solve(start, end, matrix):
     heapq.heapify(fringeList)
     start.h_value = calculate_h(start, end)
     start.updateFValue() # Not sure if this works
-    heapq.heappush(fringeList, (start, start.g_value + start.h_value))
+    heapq.heappush(fringeList, (start.g_value + start.h_value, start))
     closedList=[]
     heapq.heapify(closedList)
     while len(fringeList) != 0:
         s = heapq.heappop(fringeList)
-        print('Popped from fringe: {} , {}'.format(s[0].name - 1, s[1]))
-        if s[0].goal:
-            return True, getPath(s[0])
-        heapq.heappush(closedList, s[0])
-        print('Pushed onto closed list: {}'.format(s[0].name - 1))
-        for s_prime in getSuccessors(s[0], matrix):
+        print('Popped from fringe: {} , {}'.format(s[1].name - 1, s[0]))
+        if s[1].goal:
+            return True, getPath(s[1])
+        heapq.heappush(closedList, s[1])
+        print('Pushed onto closed list: {}'.format(s[1].name - 1))
+        for s_prime in getSuccessors(s[1], matrix):
             if s_prime not in closedList:
                 print('{} not found in closed list'.format(s_prime.name - 1))
                 if s_prime not in fringeList:
                     print('{} not found in fringe...\nSetting g = inf and parent = None'.format(s_prime.name - 1))
                     s_prime.g_value = math.inf
                     s_prime.parent = None
-                #print('Calling updateVertex(s = {} , s` = {} , fringe =  {} , start = {})'.format(s[0].name - 1, s_prime.name - 1, fringeList, start.name - 1))
-                UpdateVertex(s[0], s_prime, fringeList ,start)
+                print('Calling updateVertex(s = {} , s` = {})'.format(s[1].name - 1, s_prime.name - 1))
+                UpdateVertex(s[1], s_prime, fringeList ,start, end)
     
     return False, []
 
@@ -305,6 +311,9 @@ result, path = Solve(vertices[getVertexid((2,4), 4)], vertices[getVertexid((2,1)
 #print('Vid: {}'.format(vertices[getVertexid((2,4), 4) - 1].name))
 print('RESULTS:')
 print(result)
-print(path)
+for item in path:
+    print(item.name - 1)
+""" for i in range(0, len(path) - 1 ):
+    my_canvas.itemconfigure('({},{})'.format(path[i], path[i + 1]), fill='red') """
 
 root.mainloop()
