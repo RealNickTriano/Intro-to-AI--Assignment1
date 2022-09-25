@@ -17,13 +17,13 @@ def pointFree(p, nodes):
     # If the point blocked then:
     if nodes[(startX, startY)] == False:
         # Check above point
-        if startY > 0 && nodes[(startX, startY - 1)]:
+        if startY > 0 and nodes[(startX, startY - 1)]:
             return True
         # Check left point
-        if startX > 0 && nodes[(startX - 1, startY)]:
+        if startX > 0 and nodes[(startX - 1, startY)]:
             return True
         # Check top left point
-        if startX > 0 && startY > 0 && nodes[(startX - 1, startY - 1)]:
+        if startX > 0 and startY > 0 and nodes[(startX - 1, startY - 1)]:
             return True
         return False
     return True
@@ -43,7 +43,7 @@ def goal(nodes):
         goalX = random.randrange(gridSize_x)
         goalY = random.randrange(gridSize_y)
         goal = (goalX, goalY)
-        if goal != start && pointFree(goal, nodes):
+        if goal != start and pointFree(goal, nodes):
             break
 
     return (start, goal)
