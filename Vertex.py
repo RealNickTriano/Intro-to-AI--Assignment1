@@ -1,11 +1,11 @@
-from asyncio.windows_events import NULL
+# from asyncio.windows_events import NULL
 from unicodedata import name
 
 
 class Vertex:
 
     # constructor
-    def __init__(self, name, x_pos, y_pos, goal, start, h, g, parent = NULL) -> None:
+    def __init__(self, name, x_pos, y_pos, goal, start, h, g, parent = None) -> None:
         self.name = name
         self.x_pos = x_pos
         self.y_pos = y_pos

@@ -24,13 +24,13 @@ matrix = []
 
 # --------- Create labels ---------------
 
-lbl_x_value = Label(my_canvas, bg='white', font=('Arial', 16), text='x: ')
-lbl_y_value = Label(my_canvas, bg='white', font=('Arial', 16), text='y: ')
-lbl_goal = Label(my_canvas, bg='white', font=('Arial', 16), text='goal: ')
-lbl_start = Label(my_canvas, bg='white', font=('Arial', 16), text='start: ')
-lbl_h_value = Label(my_canvas, bg='white', font=('Arial', 16), text='h: ')
-lbl_g_value = Label(my_canvas, bg='white', font=('Arial', 16), text='g: ')
-lbl_f_value = Label(my_canvas, bg='white', font=('Arial', 16), text='f: ')
+lbl_x_value = Label(my_canvas, bg='white', fg='black', font=('Arial', 16), text='x: ')
+lbl_y_value = Label(my_canvas, bg='white', fg='black', font=('Arial', 16), text='y: ')
+lbl_goal = Label(my_canvas, bg='white', fg='black', font=('Arial', 16), text='goal: ')
+lbl_start = Label(my_canvas, bg='white', fg='black', font=('Arial', 16), text='start: ')
+lbl_h_value = Label(my_canvas, bg='white', fg='black', font=('Arial', 16), text='h: ')
+lbl_g_value = Label(my_canvas, bg='white', fg='black', font=('Arial', 16), text='g: ')
+lbl_f_value = Label(my_canvas, bg='white', fg='black', font=('Arial', 16), text='f: ')
 lbl_x_value.place(relx=0.1, rely=0.95, anchor='center')
 lbl_y_value.place(relx=0.2, rely=0.95, anchor='center')
 lbl_goal.place(relx=0.3, rely=0.95, anchor='center')
@@ -150,7 +150,7 @@ def display_grid(matrix, m, n, goal_pos, start_pos): # n = dim of matrix n * n
                 my_canvas.create_line((k % 5) * SPACEING_X + PADDING_X, 
                                     math.floor(k / 5) * SPACEING_Y + PADDING_Y, 
                                     (q % 5) * SPACEING_X + PADDING_X, 
-                                    math.floor(q / 5) * SPACEING_Y + PADDING_Y, width = LINEWIDTH, tags=mytag)
+                                    math.floor(q / 5) * SPACEING_Y + PADDING_Y, width = LINEWIDTH, tags=mytag, fill="black")
         
 
 test_cells = [(1,1,0),
