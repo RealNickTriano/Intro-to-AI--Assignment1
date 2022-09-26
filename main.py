@@ -153,20 +153,36 @@ def display_grid(matrix, m, n, goal_pos, start_pos): # n = dim of matrix n * n
                                     math.floor(q / 5) * SPACEING_Y + PADDING_Y, width = LINEWIDTH, tags=mytag, fill="black")
         
 
-test_cells = [(1,1,0),
-            (1,2,1),
-            (1,3,0),
-            (2,1,0),
-            (2,2,1),
-            (2,3,0),
-            (3,1,0),
-            (3,2,0),
-            (3,3,0),
-            (4,1,0),
-            (4,2,1),
-            (4,3,0)]
+cells_input = []
 
-display_grid(create_adj_matrix(4,3, test_cells), 4, 3, (2,1), (2,4))
+with open(FILE_PATH, "r") as file_input:
+    file_input = file_input.read().splitlines()
+
+
+for i in file_input[3:]:
+    cells_input.append(tuple(map(int, i.split(' '))))
+
+# cells_input = [(1,1,0),
+#             (1,2,1),
+#             (1,3,0),
+#             (2,1,0),
+#             (2,2,1),
+#             (2,3,0),
+#             (3,1,0),
+#             (3,2,0),
+#             (3,3,0),
+#             (4,1,0),
+#             (4,2,1),
+#             (4,3,0)]
+
+# Dimensions of matrix 
+matrix_m = int(file_input[2].split(' ')[0]) # 4 --> m rows
+matrix_n = int(file_input[2].split(' ')[1]) # 3 --> n columns
+
+goal_position = tuple(map(int, file_input[1].split(' '))) # (2, 1)
+start_position = tuple(map(int, file_input[0].split(' '))) # (2, 4)
+
+display_grid(create_adj_matrix(matrix_m, matrix_n, cells_input), matrix_m, matrix_n, goal_position, start_position)
 for item in vertices:
     print(item.name)
 
