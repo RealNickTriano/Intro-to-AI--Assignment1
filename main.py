@@ -4,14 +4,19 @@ from tkinter import *
 import heapq
 
 
-PADDING_X = 50
-PADDING_Y = 50
-SPACEING_X = 50
-SPACEING_Y = 50
-NODE_RADIUS = 10
+PADDING_X = 10
+PADDING_Y = 10
+SPACEING_X = 20
+SPACEING_Y = 20
+NODE_RADIUS = 3
 LINEWIDTH = 2
 
-FILE_PATH = 'demo.txt'
+FILE_PATH = 'tests/test_0.txt'
+
+matrix_m = 0
+matrix_n = 0
+goal_position = (0, 0)
+start_position = (0, 0)
 
 root = Tk()
 root.title('Codemy.com -  Canvas')
@@ -162,19 +167,6 @@ with open(FILE_PATH, "r") as file_input:
 for i in file_input[3:]:
     cells_input.append(tuple(map(int, i.split(' '))))
 
-# cells_input = [(1,1,0),
-#             (1,2,1),
-#             (1,3,0),
-#             (2,1,0),
-#             (2,2,1),
-#             (2,3,0),
-#             (3,1,0),
-#             (3,2,0),
-#             (3,3,0),
-#             (4,1,0),
-#             (4,2,1),
-#             (4,3,0)]
-
 # Dimensions of matrix 
 matrix_m = int(file_input[2].split(' ')[0]) # 4 --> m rows
 matrix_n = int(file_input[2].split(' ')[1]) # 3 --> n columns
@@ -185,13 +177,6 @@ start_position = tuple(map(int, file_input[0].split(' '))) # (2, 4)
 display_grid(create_adj_matrix(matrix_m, matrix_n, cells_input), matrix_m, matrix_n, goal_position, start_position)
 for item in vertices:
     print(item.name)
-
-# This is how we change line color
-# Here the line between vertex 1 and 2 is changed to red
-# So, we maintain a list of the path A* takes
-# then change the edges to show the final path
-#my_canvas.itemconfigure('(1,2)', fill='red')
-
 
 #-----------------------------------------------------
 
@@ -220,8 +205,8 @@ def getVertexCoords(vid, m):
 
 
 def getDist(s,s2):
-    a=getVertexCoords(s.name - 1,4)
-    b=getVertexCoords(s2.name - 1,4)
+    a=getVertexCoords(s.name - 1,matrix_m)
+    b=getVertexCoords(s2.name - 1,matrix_m)
     x1=a[0]
     y1=a[1]
     x2=b[0]
@@ -238,21 +223,12 @@ def getDist(s,s2):
 #g is actual cost from start to node this uses h() calc which is an estimation
 def calculate_g(node, start):
     g = getDist(node, node.parent) + node.parent.g_value
-        
-    """ a=getVertexCoords(node.name - 1,4)
-    b=getVertexCoords(start.name - 1,4)
-    x1=a[0]
-    y1=a[1]
-    x2=b[0]
-    y2=b[1]
-    g = 0
-    g=math.sqrt(2)*(min(abs(x2-x1),abs(y2-y1)))+max(abs(x2-x1),abs(y2-y1))-min(abs(x2-x1),abs(y2-y1)) """
     return g
     
 # Estimate of distance from node to goal (end)
 def calculate_h(node, end):
-    a=getVertexCoords(node.name - 1,4)
-    b=getVertexCoords(end.name - 1,4)
+    a=getVertexCoords(node.name - 1,matrix_m)
+    b=getVertexCoords(end.name - 1,matrix_m)
     print(a,b)
     x1=a[0]
     y1=a[1]
@@ -330,13 +306,14 @@ def Solve(start, end, matrix):
 
 #-------------------------------------------------------
 # Call with start and goal
-result, path = Solve(vertices[getVertexid((2,4), 4)], vertices[getVertexid((2,1), 4)], matrix)
-#print('Vid: {}'.format(vertices[getVertexid((2,4), 4) - 1].name))
+result, path = Solve(vertices[getVertexid(start_position, matrix_m)], vertices[getVertexid(goal_position, matrix_m)], matrix)
 print('RESULTS:')
 print(result)
 for item in path:
     print(item.name - 1)
-""" for i in range(0, len(path) - 1 ):
-    my_canvas.itemconfigure('({},{})'.format(path[i], path[i + 1]), fill='red') """
+for i in range(0, len(path) - 1 ):
+    print(path[i].name - 1, path[i + 1].name - 1)
+    tag = '({},{})'.format(path[i + 1].name - 1, path[i].name - 1)
+    my_canvas.itemconfigure(tag, fill='red')
 
 root.mainloop()
