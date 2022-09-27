@@ -10,6 +10,8 @@ SPACEING_X = 20
 SPACEING_Y = 20
 NODE_RADIUS = 3
 LINEWIDTH = 2
+CAN_WIDTH = 0
+CAN_HEIGHT = 0
 
 FILE_PATH = 'tests/test_0.txt'
 
@@ -22,7 +24,7 @@ root = Tk()
 root.title('Codemy.com -  Canvas')
 root.geometry("1920x1080")
 
-my_canvas = Canvas(root, width=2500, height=1000, bg="white")
+my_canvas = Canvas(root, width=2050, height=1050, bg="white")
 my_canvas.pack(pady=20)
 vertices = []
 matrix = []
@@ -36,13 +38,13 @@ lbl_start = Label(my_canvas, bg='white', fg='black', font=('Arial', 16), text='s
 lbl_h_value = Label(my_canvas, bg='white', fg='black', font=('Arial', 16), text='h: ')
 lbl_g_value = Label(my_canvas, bg='white', fg='black', font=('Arial', 16), text='g: ')
 lbl_f_value = Label(my_canvas, bg='white', fg='black', font=('Arial', 16), text='f: ')
-lbl_x_value.place(relx=0.1, rely=0.95, anchor='center')
-lbl_y_value.place(relx=0.2, rely=0.95, anchor='center')
-lbl_goal.place(relx=0.3, rely=0.95, anchor='center')
-lbl_start.place(relx=0.4, rely=0.95, anchor='center')
-lbl_h_value.place(relx=0.5, rely=0.95, anchor='center')
-lbl_g_value.place(relx=0.6, rely=0.95, anchor='center')
-lbl_f_value.place(relx=0.7, rely=0.95, anchor='center')
+lbl_x_value.place(relx=0.1, rely=0.98, anchor='center')
+lbl_y_value.place(relx=0.2, rely=0.98, anchor='center')
+lbl_goal.place(relx=0.3, rely=0.98, anchor='center')
+lbl_start.place(relx=0.4, rely=0.98, anchor='center')
+lbl_h_value.place(relx=0.5, rely=0.98, anchor='center')
+lbl_g_value.place(relx=0.6, rely=0.98, anchor='center')
+lbl_f_value.place(relx=0.7, rely=0.98, anchor='center')
 
 # --------- End Create labels ---------------
 
@@ -120,11 +122,11 @@ def create_circle(x, y, r, canvas, goal, start): # center x,y, radius
     x1 = x + r
     y1 = y + r
     if goal and start:
-        c = canvas.create_oval(x0, y0, x1, y1, fill='purple')
+        c = canvas.create_oval(x0, y0, x1, y1, fill='purple', outline='purple')
     elif goal:
-        c = canvas.create_oval(x0 - 2, y0 - 2, x1 + 2, y1 + 2, fill='blue')
+        c = canvas.create_oval(x0, y0, x1 , y1, fill='blue', outline='blue')
     elif start:
-        c = canvas.create_oval(x0, y0, x1, y1, fill='red')
+        c = canvas.create_oval(x0, y0, x1, y1, fill='red', outline='red')
     else:
         c = canvas.create_oval(x0, y0, x1, y1, fill='#000')
     canvas.tag_bind(c, "<Enter>", handle_enter_vertex)
@@ -175,8 +177,6 @@ goal_position = tuple(map(int, file_input[1].split(' '))) # (2, 1)
 start_position = tuple(map(int, file_input[0].split(' '))) # (2, 4)
 
 display_grid(create_adj_matrix(matrix_m, matrix_n, cells_input), matrix_m, matrix_n, goal_position, start_position)
-""" for item in vertices:
-    print(item.name) """
 
 #-----------------------------------------------------
 
@@ -193,16 +193,6 @@ def UpdateVertex(s,s2, fringeList, start, end):
         s2.updateFValue()
         heapq.heappush(fringeList, (s2.g_value + s2.h_value, s2))
         print('Pushed s` to fringe: {}, {}'.format(s2.name - 1, s2.g_value + s2.h_value))
-
-""" def getVertexid(coords, m):
-    id = coords[1] * (m + 1) + coords[0]
-    return id
-
-# Converts id to coordinates
-def getVertexCoords(vid, m):
-    coords = (vid % (m + 1), math.floor(vid / (m + 1)))
-    return coords """
-
 
 def getDist(s,s2):
     a=getVertexCoords(s.name - 1,matrix_m)
@@ -229,7 +219,6 @@ def calculate_g(node, start):
 def calculate_h(node, end):
     a=getVertexCoords(node.name - 1,matrix_m)
     b=getVertexCoords(end.name - 1,matrix_m)
-    print(a,b)
     x1=a[0]
     y1=a[1]
     x2=b[0]
@@ -248,7 +237,7 @@ def getPath(node):
 
 def getSuccessors(node, matrix):
     succ = []
-    print('Getting Successors for node: {} matrix row: {}'.format(node.name - 1, matrix[node.name - 1]))
+    print('Getting Successors for node: {} '.format(node.name - 1))
     for index, item in enumerate(matrix[node.name - 1]):
         if item == 1:
             succ.append(vertices[index])
@@ -264,7 +253,6 @@ def printList(list):
 
 def checkInList(item, fringeList):
     for x in fringeList:
-        print(item.name - 1, x[1].name - 1)
         if item.name - 1 == x[1].name - 1:
             return False
 
@@ -281,17 +269,14 @@ def Solve(start, end, matrix):
     closedList=[]
     heapq.heapify(closedList)
     while len(fringeList) != 0:
-        printList(fringeList)
         s = heapq.heappop(fringeList)
         print('Popped from fringe: {} , {}'.format(s[1].name - 1, s[0]))
         print('Fringe:')
-        printList(fringeList)
         if s[1].goal:
             return True, getPath(s[1])
         heapq.heappush(closedList, s[1])
         print('Pushed onto closed list: {}'.format(s[1].name - 1))
         print('Closed:')
-        printList(closedList)
         for s_prime in getSuccessors(s[1], matrix):
             if s_prime not in closedList:
                 print('{} not found in closed list'.format(s_prime.name - 1))
@@ -307,15 +292,15 @@ def Solve(start, end, matrix):
 #-------------------------------------------------------
 # Call with start and goal
 result, path = Solve(vertices[getVertexid(start_position, matrix_m)], vertices[getVertexid(goal_position, matrix_m)], matrix)
-print('RESULTS:')
-print(result)
-for item in path:
-    print(item.name - 1)
-for i in range(0, len(path) - 1 ):
-    print(path[i].name - 1, path[i + 1].name - 1)
-    tag = '({},{})'.format(path[i + 1].name - 1, path[i].name - 1)
-    tag1 = '({},{})'.format(path[i].name - 1, path[i + 1].name - 1)
-    my_canvas.itemconfigure(tag, fill='red')
-    my_canvas.itemconfigure(tag1, fill='red')
+
+if result:
+    for i in range(0, len(path) - 1 ):
+        tag = '({},{})'.format(path[i + 1].name - 1, path[i].name - 1)
+        tag1 = '({},{})'.format(path[i].name - 1, path[i + 1].name - 1)
+        my_canvas.itemconfigure(tag, fill='red')
+        my_canvas.itemconfigure(tag1, fill='red')
+else:
+    lbl_path = Label(my_canvas, bg='white', fg='red', font=('Arial', 24), text='NO PATH')
+    lbl_path.place(relx=0.5, rely=0.5, anchor='center')
 
 root.mainloop()
