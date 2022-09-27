@@ -1,3 +1,4 @@
+from json.encoder import INFINITY
 from telnetlib import theNULL
 
 from main import getDist
@@ -60,7 +61,7 @@ def LineOfSight(s,s2):
             s2.f_value=s2.f_value-xVal
             if s2.f_value!=0 and IsBlocked(x1+(sx-1)/2,y1+(sy-1)/2):
                 return False
-            if yVal=0 and IsBlocked(x1+(sx-1)/2,y1) and IsBlocked(x1+(sx-1)/2,y1-1):
+            if yVal==0 and IsBlocked(x1+(sx-1)/2,y1) and IsBlocked(x1+(sx-1)/2,y1-1):
                 return False
             x1=x1+sx
 
@@ -74,6 +75,29 @@ def LineOfSight(s,s2):
                 s2.f_value=s2.f_value-yVal
             if s2.f_value != 0 and IsBlocked(x1+x1+(sx-1)/2, y1+(sy-1)/2):
                 return False
-            if xVal = 0 and IsBlocked(x1,y1+(sy-1)/2) and IsBlocked(x1-1,y1+(sy-1)/2):
+            if xVal == 0 and IsBlocked(x1,y1+(sy-1)/2) and IsBlocked(x1-1,y1+(sy-1)/2):
                 return False
  
+def thetaSolve(start,end,matrix):
+    start.g_value=0
+    start.parent=start
+    fringeList=[]
+    heapq.heapify(fringeList)
+    
+    start.h_value = getDist(start, end)
+    while len(fringeList) != 0:
+        s = heapq.heappop(fringeList)
+        if s == end:
+            return True, getPath(s[1])
+        closedList=[]
+        heapq.heapify(closedList)
+        heapq.heappush(closedList, s[1])
+        print('Pushed onto closed list: {}'.format(s[1].name - 1))
+        print('Closed:')
+        for s_prime in getSuccessors(s[1], matrix):
+            if s_prime not in closedList:
+                 if checkInList(s_prime, fringeList):
+                    s_prime.g_value=INFINITY
+                    s_prime.parent=None
+            UpdateVertexTheta(s[1],s_prime,fringeList,start,end)
+    return "No Path Found" 
