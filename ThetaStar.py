@@ -1,6 +1,4 @@
 from json.encoder import INFINITY
-from telnetlib import theNULL
-
 from main import getDist
 
 
@@ -33,6 +31,20 @@ def IsBlocked(s,s2):
     if=s2:
         s1+=1
 
+def calculate_g(node, start):
+    g = getDist(node, node.parent) + node.parent.g_value
+    return g
+
+def calculate_h(node,end):
+    a=getVertexCoords(s.name - 1,matrix_m)
+    b=getVertexCoords(s2.name - 1,matrix_m)
+    x1=a[0]
+    y1=a[1]
+    x2=b[0]
+    y2=b[1]
+    xDist=x2-x1
+    yDist=y2-y1
+    h=math.sqrt(math.pow(xDist),2 +math.pow(yDist),2)
 
 def LineOfSight(s,s2):
     a=getVertexCoords(s.name - 1,matrix_m)
