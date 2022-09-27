@@ -22,7 +22,7 @@ root = Tk()
 root.title('Codemy.com -  Canvas')
 root.geometry("1920x1080")
 
-my_canvas = Canvas(root, width=1920, height=1080, bg="white")
+my_canvas = Canvas(root, width=2500, height=1000, bg="white")
 my_canvas.pack(pady=20)
 vertices = []
 matrix = []
@@ -122,7 +122,7 @@ def create_circle(x, y, r, canvas, goal, start): # center x,y, radius
     if goal and start:
         c = canvas.create_oval(x0, y0, x1, y1, fill='purple')
     elif goal:
-        c = canvas.create_oval(x0, y0, x1, y1, fill='blue')
+        c = canvas.create_oval(x0 - 2, y0 - 2, x1 + 2, y1 + 2, fill='blue')
     elif start:
         c = canvas.create_oval(x0, y0, x1, y1, fill='red')
     else:
@@ -152,10 +152,10 @@ def display_grid(matrix, m, n, goal_pos, start_pos): # n = dim of matrix n * n
             if(matrix[k][q] == 1):
                 mytag = "({},{})".format(k,q)
                 # draw line from vertex i to vertex j
-                my_canvas.create_line((k % 5) * SPACEING_X + PADDING_X, 
-                                    math.floor(k / 5) * SPACEING_Y + PADDING_Y, 
-                                    (q % 5) * SPACEING_X + PADDING_X, 
-                                    math.floor(q / 5) * SPACEING_Y + PADDING_Y, width = LINEWIDTH, tags=mytag, fill="black")
+                my_canvas.create_line((k % (m + 1)) * SPACEING_X + PADDING_X, 
+                                    math.floor(k / (m + 1)) * SPACEING_Y + PADDING_Y, 
+                                    (q % (m + 1)) * SPACEING_X + PADDING_X, 
+                                    math.floor(q / (m + 1)) * SPACEING_Y + PADDING_Y, width = LINEWIDTH, tags=mytag, fill="black")
         
 
 cells_input = []
@@ -175,8 +175,8 @@ goal_position = tuple(map(int, file_input[1].split(' '))) # (2, 1)
 start_position = tuple(map(int, file_input[0].split(' '))) # (2, 4)
 
 display_grid(create_adj_matrix(matrix_m, matrix_n, cells_input), matrix_m, matrix_n, goal_position, start_position)
-for item in vertices:
-    print(item.name)
+""" for item in vertices:
+    print(item.name) """
 
 #-----------------------------------------------------
 
@@ -314,6 +314,8 @@ for item in path:
 for i in range(0, len(path) - 1 ):
     print(path[i].name - 1, path[i + 1].name - 1)
     tag = '({},{})'.format(path[i + 1].name - 1, path[i].name - 1)
+    tag1 = '({},{})'.format(path[i].name - 1, path[i + 1].name - 1)
     my_canvas.itemconfigure(tag, fill='red')
+    my_canvas.itemconfigure(tag1, fill='red')
 
 root.mainloop()
