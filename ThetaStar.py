@@ -1,7 +1,7 @@
 from json.encoder import INFINITY
 from main import getDist
 
-
+#TODO getDist needs to change. can be calculate H
 def UpdateVertexTheta(s,s2, fringeList, start, end):
     if LineOfSight(s.parent, s2):
         if s.parent.g_value+getDist(s.parent,s2)<s2.g_value:
@@ -26,10 +26,53 @@ def UpdateVertexTheta(s,s2, fringeList, start, end):
         s2.updateFValue()
         heapq.heappush(fringeList, (s2.g_value + s2.h_value, s2))
         print('Pushed s` to fringe: {}, {}'.format(s2.name - 1, s2.g_value + s2.h_value))
+def create_adj_matrix(m, n, cells):
+    for i in range(0, (m + 1) * (n + 1)):
+        row = []
+        for j in range(0, (m + 1) * (n + 1)):
+                row.append(0)
+        matrix.append(row)
+    
+    # matrix is init with all 0's
 
-def IsBlocked(s,s2):
-    if=s2:
-        s1+=1
+    for item in cells:
+        x = item[0] - 1 
+        y = item[1] - 1
+        blocked = item[2]
+        # Find vertex id from (x, y)
+        vid = y * (m + 1) + x
+        if not blocked:
+            matrix[vid][vid + 1] = 1
+            matrix[vid + 1][vid] = 1
+            matrix[vid][vid + m + 1] = 1
+            matrix[vid + m + 1][vid] = 1
+            matrix[vid][vid + m + 2] = 1
+            matrix[vid + m + 2][vid] = 1
+            matrix[vid + m + 1][vid + m + 2] = 1
+            matrix[vid + m + 2][vid + m + 1] = 1
+            matrix[vid + 1][vid + m + 1] = 1
+            matrix[vid + m + 1][vid + 1] = 1
+            matrix[vid + 1][vid + m + 2] = 1
+            matrix[vid + m + 2][vid + 1] = 1
+        else:
+            pass
+
+    return matrix
+def getVertexid(coords, m):
+    id = (coords[1] -  1) * (m + 1) + (coords[0] - 1)
+    return id
+def IsBlocked(xCoord,yCoord):
+    x2=xCoord-1
+    y2=yCoord-1
+    x3=xCoord+1
+    y3=yCoord+1
+    tuple2=[x2,y2]
+    tuple3=[x3,y3]
+    ID1=getVertexid(tuple2,m)
+    ID2=getVertexid(tuple3,m)
+    ID3=matrix[ID1,ID2]
+    if ID3 != 0:
+        return True
 
 def calculate_g(node, start):
     g = getDist(node, node.parent) + node.parent.g_value
@@ -85,7 +128,7 @@ def LineOfSight(s,s2):
                     return False
                 x1=x1+sx
                 s2.f_value=s2.f_value-yVal
-            if s2.f_value != 0 and IsBlocked(x1+x1+(sx-1)/2, y1+(sy-1)/2):
+            if s2.f_value != 0 and IsBlocked(x1+(sx-1)/2, y1+(sy-1)/2):
                 return False
             if xVal == 0 and IsBlocked(x1,y1+(sy-1)/2) and IsBlocked(x1-1,y1+(sy-1)/2):
                 return False
