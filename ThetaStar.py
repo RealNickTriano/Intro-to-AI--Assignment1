@@ -13,7 +13,7 @@ LINEWIDTH = 2
 CAN_WIDTH = 0
 CAN_HEIGHT = 0
 
-FILE_PATH = 'tests/test_2.txt'
+FILE_PATH = 'tests/test_0.txt'
 
 matrix_m = 0
 matrix_n = 0
@@ -193,8 +193,8 @@ def UpdateVertexTheta(s,s2, fringeList, start, end):
             s2.g_value = calculate_g(s2, start)
             s2.h_value = calculate_h(s2, end)
             s2.updateFValue()
-        heapq.heappush(fringeList, (s2.g_value + s2.h_value, s2))
-        print('Pushed s` to fringe: {}, {}'.format(s2.name - 1, s2.g_value + s2.h_value))
+            heapq.heappush(fringeList, (s2.g_value + s2.h_value, s2))
+            print('Pushed s` to fringe: {}, {}'.format(s2.name - 1, s2.g_value + s2.h_value))
 
     else:
         #Path 1
@@ -375,7 +375,7 @@ if result:
 else:
     lbl_path = Label(my_canvas, bg='white', fg='red', font=('Arial', 24), text='NO PATH')
     lbl_path.place(relx=0.5, rely=0.5, anchor='center')
-
+print(path) 
 root.mainloop()
 
 #TODO getDist needs to change. can be calculate H
