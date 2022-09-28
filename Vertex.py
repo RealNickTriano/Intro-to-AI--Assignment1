@@ -1,7 +1,3 @@
-# from asyncio.windows_events import NULL
-from unicodedata import name
-
-
 class Vertex:
 
     # constructor
