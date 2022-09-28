@@ -4,16 +4,16 @@ from tkinter import *
 import heapq
 
 
-PADDING_X = 10
-PADDING_Y = 10
-SPACEING_X = 20
-SPACEING_Y = 20
-NODE_RADIUS = 3
-LINEWIDTH = 2
+PADDING_X = 100
+PADDING_Y = 100
+SPACEING_X = 50
+SPACEING_Y = 50
+NODE_RADIUS = 8
+LINEWIDTH = 5
 CAN_WIDTH = 0
 CAN_HEIGHT = 0
 
-FILE_PATH = 'tests/test_0.txt'
+FILE_PATH = 'demo2.txt'
 
 matrix_m = 0
 matrix_n = 0
@@ -109,6 +109,10 @@ def getVertexid(coords, m):
     id = (coords[1] -  1) * (m + 1) + (coords[0] - 1)
     return id
 
+def getVertexidWithRightCoords(coords, m):
+    id = (coords[1]) * (m + 1) + (coords[0])
+    return id
+
 # Converts id to coordinates
 def getVertexCoords(vid, m):
     coords = (vid % (m + 1), math.floor(vid / (m + 1)))
@@ -182,6 +186,7 @@ display_grid(create_adj_matrix(matrix_m, matrix_n, cells_input), matrix_m, matri
 
 def UpdateVertexTheta(s,s2, fringeList, start, end):
     if LineOfSight(s.parent, s2):
+        print('Line of check True')
         #Path 2
         if s.parent.g_value + getDist(s.parent,s2) < s2.g_value:
             s2.g_value = s.parent.g_value + getDist(s.parent, s2)
@@ -192,11 +197,12 @@ def UpdateVertexTheta(s,s2, fringeList, start, end):
                 heapq.heapify(fringeList)
             s2.g_value = calculate_g(s2, start)
             s2.h_value = calculate_h(s2, end)
-            s2.updateFValue()
+            #s2.updateFValue()
             heapq.heappush(fringeList, (s2.g_value + s2.h_value, s2))
             print('Pushed s` to fringe: {}, {}'.format(s2.name - 1, s2.g_value + s2.h_value))
 
     else:
+        print('Line of check False')
         #Path 1
         if s.g_value + getDist(s,s2) < s2.g_value:
             print('Found better path to s`, setting s` parent to s...')
@@ -275,11 +281,19 @@ def checkInList(item, fringeList):
 def IsBlocked(xCoord,yCoord):
     x = int(xCoord)
     y = int(yCoord)
+    print('Checking if cell {} is blocked'.format((x, y)))
+    
     x2= x - 1
     y2= y - 1
-    blocked = matrix[getVertexid((x2, y2), matrix_m)][getVertexid((x, y), matrix_m)]
-    print('{} is {}'.format((x, y), blocked))
-    return not blocked
+    print('Checking nodes Top left: {} and Bot Right: {}'.format((x2,y2), (x, y)))
+    print(getVertexidWithRightCoords((x2, y2), matrix_m))
+    print('Checking edge from {} to {}'.format(getVertexidWithRightCoords((x, y), matrix_m), getVertexidWithRightCoords((x2, y2), matrix_m)))
+    blocked = not matrix[getVertexidWithRightCoords((x, y), matrix_m)][getVertexidWithRightCoords((x2, y2), matrix_m)]
+    if blocked:
+        print('Cell {} is blocked'.format((x, y), blocked))
+    else:
+        print('Cell {} is NOT blocked'.format((x, y), blocked))
+    return blocked
 
 def LineOfSight(s,s2):
     a=getVertexCoords(s.name - 1, matrix_m)
@@ -298,39 +312,38 @@ def LineOfSight(s,s2):
         sy = 1
     if xVal < 0:
         xVal = xVal * -1
-        sx =- 1
+        sx = -1
     else:
         sx = 1
-    if xVal>=yVal:
-        while x0!=x1:
-            print(x0,x1)
+    if xVal >= yVal:
+        while x0 != x1:
+            print('x0 != x1')
             s2.f_value = s2.f_value + yVal
-            print(s2.f_value)
-            if s2.f_value>=xVal:
-                if IsBlocked(x0 + ((sx-1) / 2), y0 + ((sy-1) / 2)):
+            if s2.f_value >= xVal:
+                if IsBlocked(x0 + ((sx - 1) / 2), y0 + ((sy - 1) / 2)):
                     return False
-                y0=y0+sy
-                s2.f_value=s2.f_value-xVal
-            if s2.f_value!=0 and IsBlocked(x0 + ((sx-1) / 2), y0 + ((sy-1) / 2)):
+                y0= y0 + sy
+                s2.f_value = s2.f_value-xVal
+            if s2.f_value != 0 and IsBlocked(x0 + ((sx - 1) / 2), y0 + ((sy - 1) / 2)):
                 return False
-            if yVal==0 and IsBlocked(x0 + ((sx-1) / 2),y0) and IsBlocked(x0 + ((sx-1) / 2), y0 - 1):
+            if yVal == 0 and IsBlocked(x0 + ((sx - 1) / 2), y0) and IsBlocked(x0 + ((sx - 1) / 2), y0 - 1):
                 return False
             x0 = x0 + sx
     else:
         while y0 != y1:
-            print(y0,y1)
-            s2.f_value=s2.f_value+xVal
-            if s2.f_value>=yVal:
+            print('y0 != y1')
+            s2.f_value = s2.f_value + xVal
+            if s2.f_value >= yVal:
                 print(s2.f_value)
                 if IsBlocked(x0+((sx-1)/2),y0+((sy-1)/2)):
                     return False
-                x0=x0+sx
-                s2.f_value=s2.f_value-yVal
+                x0 = x0 + sx
+                s2.f_value = s2.f_value-yVal
             if s2.f_value != 0 and IsBlocked(x0+((sx-1)/2), y0+((sy-1)/2)):
                 return False
             if xVal == 0 and IsBlocked(x0,y0+((sy-1)/2)) and IsBlocked(x0-1,y0+((sy-1)/2)):
                 return False
-            y0=y0+sy
+            y0 = y0 + sy
     return True
 
 def thetaSolve(start,end,matrix):
@@ -348,17 +361,17 @@ def thetaSolve(start,end,matrix):
         s = heapq.heappop(fringeList)
         if s[1].goal:
             return True, getPath(s[1])
-        
-        
         heapq.heappush(closedList, s[1])
         print('Pushed onto closed list: {}'.format(s[1].name - 1))
-        print('Closed:')
         #print(closedList)
         for s_prime in getSuccessors(s[1], matrix):
             if s_prime not in closedList:
-                 if checkInList(s_prime, fringeList) or len(fringeList) ==  0:
+                print('{} not found in closed list'.format(s_prime.name - 1))
+                if checkInList(s_prime, fringeList) or len(fringeList) ==  0:
+                    print('{} not found in fringe...\nSetting g = inf and parent = None'.format(s_prime.name - 1))
                     s_prime.g_value=math.inf
                     s_prime.parent=None
+            print('Calling updateVertexTheta(s = {} , s` = {})'.format(s[1].name - 1, s_prime.name - 1))
             UpdateVertexTheta(s[1],s_prime,fringeList,start,end)
     return False, []
 
@@ -370,12 +383,11 @@ if result:
     for i in range(0, len(path) - 1 ):
         tag = '({},{})'.format(path[i + 1].name - 1, path[i].name - 1)
         tag1 = '({},{})'.format(path[i].name - 1, path[i + 1].name - 1)
-        my_canvas.itemconfigure(tag, fill='red')
-        my_canvas.itemconfigure(tag1, fill='red')
+        my_canvas.create_line(path[i + 1].x_pos, path[i + 1].y_pos, path[i].x_pos, path[i].y_pos, width=LINEWIDTH, fill="red")
 else:
     lbl_path = Label(my_canvas, bg='white', fg='red', font=('Arial', 24), text='NO PATH')
     lbl_path.place(relx=0.5, rely=0.5, anchor='center')
-print(path) 
+
 root.mainloop()
 
 #TODO getDist needs to change. can be calculate H

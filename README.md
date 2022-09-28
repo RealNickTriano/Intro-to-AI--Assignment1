@@ -21,6 +21,18 @@ Nick Triano, Shayan Rahmatullah, Will Keleher
     To run Theta*:
         python3 ThetaStar.py
 
+# Notes
+Control the display of the graph with the following constants.
+
+If you use a smaller graph ypu may need to increase cell size to
+improve visibility
+PADDING_X (padding from edges of canvas, affects whole graph)
+PADDING_Y
+SPACEING_X (spacing between nodes, increases cell  length/width)
+SPACEING_Y
+NODE_RADIUS (size of nodes)
+LINEWIDTH (thickness of edges)
+
 # Known Issues
 
 1) Theta* runs in an infinite loop and does not produce a result
