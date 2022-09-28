@@ -303,7 +303,9 @@ def LineOfSight(s,s2):
         sx = 1
     if xVal>yVal:
         while x0!=x1:
+            print(x0,x1)
             s2.f_value = s2.f_value + yVal
+            print(s2.f_value)
             if IsBlocked(x0 + ((sx-1) / 2), y0 + ((sy-1) / 2)):
                 return False
             y0=y0+sy
@@ -315,8 +317,10 @@ def LineOfSight(s,s2):
             x0 = x0 + sx
     else:
         while y0 != y1:
+            print(y0,y1)
             s2.f_value=s2.f_value+xVal
             if s2.f_value>yVal:
+                print(s2.f_value)
                 if IsBlocked(x0+(sx-1)/2,y0+(sy-1)/2):
                     return False
                 x0=x0+sx
@@ -325,6 +329,7 @@ def LineOfSight(s,s2):
                 return False
             if xVal == 0 and IsBlocked(x0,y0+(sy-1)/2) and IsBlocked(x0-1,y0+(sy-1)/2):
                 return False
+            y0=y0+sy
     return True
 
 def thetaSolve(start,end,matrix):
@@ -336,18 +341,21 @@ def thetaSolve(start,end,matrix):
     start.updateFValue()
     heapq.heappush(fringeList, (start.g_value + start.h_value, start))
     start.h_value = getDist(start, end)
+    closedList=[]
+    heapq.heapify(closedList)
     while len(fringeList) != 0:
         s = heapq.heappop(fringeList)
         if s == end:
             return True, getPath(s[1])
-        closedList=[]
-        heapq.heapify(closedList)
+        
+        
         heapq.heappush(closedList, s[1])
         print('Pushed onto closed list: {}'.format(s[1].name - 1))
         print('Closed:')
+        #print(closedList)
         for s_prime in getSuccessors(s[1], matrix):
             if s_prime not in closedList:
-                 if checkInList(s_prime, fringeList):
+                 if checkInList(s_prime, fringeList) or len(fringeList) ==  0:
                     s_prime.g_value=math.inf
                     s_prime.parent=None
             UpdateVertexTheta(s[1],s_prime,fringeList,start,end)

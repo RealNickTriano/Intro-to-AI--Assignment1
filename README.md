@@ -2,7 +2,7 @@
 
 # Authors
 
-Nick Triano,
+Nick Triano, Shayan Rahmatullah, Will Keleher
 
 # How to Run
 
