@@ -182,17 +182,22 @@ display_grid(create_adj_matrix(matrix_m, matrix_n, cells_input), matrix_m, matri
 
 def UpdateVertexTheta(s,s2, fringeList, start, end):
     if LineOfSight(s.parent, s2):
-        if s.parent.g_value + getDist(s.parent,s2)<s2.g_value:
-            s2.g_value=s.parent.g_value+getDist(s.parent, s2)
-            s2.parent=s.parent
+        #Path 2
+        if s.parent.g_value + getDist(s.parent,s2) < s2.g_value:
+            s2.g_value = s.parent.g_value + getDist(s.parent, s2)
+            s2.parent = s.parent
             if s2 in fringeList:
                 print('s` found in fringe list.\nRemoving from list and reheapifying...')
                 fringeList.remove(s2)
                 heapq.heapify(fringeList)
+            s2.g_value = calculate_g(s2, start)
+            s2.h_value = calculate_h(s2, end)
+            s2.updateFValue()
         heapq.heappush(fringeList, (s2.g_value + s2.h_value, s2))
         print('Pushed s` to fringe: {}, {}'.format(s2.name - 1, s2.g_value + s2.h_value))
 
     else:
+        #Path 1
         if s.g_value + getDist(s,s2) < s2.g_value:
             print('Found better path to s`, setting s` parent to s...')
             s2.parent = s
@@ -275,7 +280,7 @@ def IsBlocked(xCoord,yCoord):
     x3= x + 1
     y3= y + 1
     blocked = matrix[getVertexid((x2, y2), matrix_m)][getVertexid((x3, y3), matrix_m)]
-    print('{} is {}'.format((xCoord, yCoord), blocked))
+    print('{} is {}'.format((x, y), blocked))
     return not blocked
 
 def LineOfSight(s,s2):
