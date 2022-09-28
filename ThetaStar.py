@@ -13,7 +13,7 @@ LINEWIDTH = 2
 CAN_WIDTH = 0
 CAN_HEIGHT = 0
 
-FILE_PATH = 'demo.txt'
+FILE_PATH = 'tests/test_2.txt'
 
 matrix_m = 0
 matrix_n = 0
@@ -301,15 +301,16 @@ def LineOfSight(s,s2):
         sx =- 1
     else:
         sx = 1
-    if xVal>yVal:
+    if xVal>=yVal:
         while x0!=x1:
             print(x0,x1)
             s2.f_value = s2.f_value + yVal
             print(s2.f_value)
-            if IsBlocked(x0 + ((sx-1) / 2), y0 + ((sy-1) / 2)):
-                return False
-            y0=y0+sy
-            s2.f_value=s2.f_value-xVal
+            if s2.f_value>=xVal:
+                if IsBlocked(x0 + ((sx-1) / 2), y0 + ((sy-1) / 2)):
+                    return False
+                y0=y0+sy
+                s2.f_value=s2.f_value-xVal
             if s2.f_value!=0 and IsBlocked(x0 + ((sx-1) / 2), y0 + ((sy-1) / 2)):
                 return False
             if yVal==0 and IsBlocked(x0 + ((sx-1) / 2),y0) and IsBlocked(x0 + ((sx-1) / 2), y0 - 1):
@@ -319,15 +320,15 @@ def LineOfSight(s,s2):
         while y0 != y1:
             print(y0,y1)
             s2.f_value=s2.f_value+xVal
-            if s2.f_value>yVal:
+            if s2.f_value>=yVal:
                 print(s2.f_value)
-                if IsBlocked(x0+(sx-1)/2,y0+(sy-1)/2):
+                if IsBlocked(x0+((sx-1)/2),y0+((sy-1)/2)):
                     return False
                 x0=x0+sx
                 s2.f_value=s2.f_value-yVal
-            if s2.f_value != 0 and IsBlocked(x0+(sx-1)/2, y0+(sy-1)/2):
+            if s2.f_value != 0 and IsBlocked(x0+((sx-1)/2), y0+((sy-1)/2)):
                 return False
-            if xVal == 0 and IsBlocked(x0,y0+(sy-1)/2) and IsBlocked(x0-1,y0+(sy-1)/2):
+            if xVal == 0 and IsBlocked(x0,y0+((sy-1)/2)) and IsBlocked(x0-1,y0+((sy-1)/2)):
                 return False
             y0=y0+sy
     return True
@@ -345,7 +346,7 @@ def thetaSolve(start,end,matrix):
     heapq.heapify(closedList)
     while len(fringeList) != 0:
         s = heapq.heappop(fringeList)
-        if s == end:
+        if s[1].goal:
             return True, getPath(s[1])
         
         
