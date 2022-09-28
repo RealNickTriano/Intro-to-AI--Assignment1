@@ -4,16 +4,16 @@ from tkinter import *
 import heapq
 
 
-PADDING_X = 100
-PADDING_Y = 100
-SPACEING_X = 50
-SPACEING_Y = 50
-NODE_RADIUS = 8
-LINEWIDTH = 5
+PADDING_X = 10
+PADDING_Y = 10
+SPACEING_X = 20
+SPACEING_Y = 20
+NODE_RADIUS = 3
+LINEWIDTH = 2
 CAN_WIDTH = 0
 CAN_HEIGHT = 0
 
-FILE_PATH = 'demo2.txt'
+FILE_PATH = 'tests/test_32.txt'
 
 matrix_m = 0
 matrix_n = 0
@@ -38,6 +38,8 @@ lbl_start = Label(my_canvas, bg='white', fg='black', font=('Arial', 16), text='s
 lbl_h_value = Label(my_canvas, bg='white', fg='black', font=('Arial', 16), text='h: ')
 lbl_g_value = Label(my_canvas, bg='white', fg='black', font=('Arial', 16), text='g: ')
 lbl_f_value = Label(my_canvas, bg='white', fg='black', font=('Arial', 16), text='f: ')
+lbl_name = Label(my_canvas, bg='white', fg='black', font=('Arial', 16), text='name: ')
+lbl_name.place(relx=0.0, rely=0.98, anchor='center')
 lbl_x_value.place(relx=0.1, rely=0.98, anchor='center')
 lbl_y_value.place(relx=0.2, rely=0.98, anchor='center')
 lbl_goal.place(relx=0.3, rely=0.98, anchor='center')
@@ -49,6 +51,7 @@ lbl_f_value.place(relx=0.7, rely=0.98, anchor='center')
 # --------- End Create labels ---------------
 
 def updateLabels(v):
+    lbl_name.config(text= 'name: ' + '{}'.format(v.name - 1))
     lbl_x_value.config(text= 'x: ' + '{:.2f}'.format(v.x_pos))
     lbl_y_value.config(text= 'y: ' + '{:.2f}'.format(v.y_pos))
     lbl_goal.config(text= 'goal: ' + str(v.goal))
@@ -197,7 +200,7 @@ def UpdateVertexTheta(s,s2, fringeList, start, end):
                 heapq.heapify(fringeList)
             s2.g_value = calculate_g(s2, start)
             s2.h_value = calculate_h(s2, end)
-            #s2.updateFValue()
+            s2.updateFValue()
             heapq.heappush(fringeList, (s2.g_value + s2.h_value, s2))
             print('Pushed s` to fringe: {}, {}'.format(s2.name - 1, s2.g_value + s2.h_value))
 
@@ -283,8 +286,8 @@ def IsBlocked(xCoord,yCoord):
     y = int(yCoord)
     print('Checking if cell {} is blocked'.format((x, y)))
     
-    x2= x - 1
-    y2= y - 1
+    x2= x + 1
+    y2= y + 1
     print('Checking nodes Top left: {} and Bot Right: {}'.format((x2,y2), (x, y)))
     print(getVertexidWithRightCoords((x2, y2), matrix_m))
     print('Checking edge from {} to {}'.format(getVertexidWithRightCoords((x, y), matrix_m), getVertexidWithRightCoords((x2, y2), matrix_m)))

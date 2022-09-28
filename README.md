@@ -24,8 +24,8 @@ Nick Triano, Shayan Rahmatullah, Will Keleher
 # Notes
 Control the display of the graph with the following constants.
 
-If you use a smaller graph ypu may need to increase cell size to
-improve visibility
+If you use a smaller graph you may need to increase cell size to improve visibility
+
 PADDING_X (padding from edges of canvas, affects whole graph)
 PADDING_Y
 SPACEING_X (spacing between nodes, increases cell  length/width)
@@ -35,9 +35,7 @@ LINEWIDTH (thickness of edges)
 
 # Known Issues
 
-1) Theta* runs in an infinite loop and does not produce a result
-
-2) For a 100x50 sized grid, the window size is bigger than a standard 1080p display
+1) For a 100x50 sized grid, the window size is bigger than a standard 1080p display
     The following values can be changed to be smaller, although it becomes hard to view:
     line 9 SPACEING_X
     line 10 SPACEING_Y 
