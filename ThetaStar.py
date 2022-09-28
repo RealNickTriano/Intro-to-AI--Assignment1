@@ -277,9 +277,7 @@ def IsBlocked(xCoord,yCoord):
     y = int(yCoord)
     x2= x - 1
     y2= y - 1
-    x3= x + 1
-    y3= y + 1
-    blocked = matrix[getVertexid((x2, y2), matrix_m)][getVertexid((x3, y3), matrix_m)]
+    blocked = matrix[getVertexid((x2, y2), matrix_m)][getVertexid((x, y), matrix_m)]
     print('{} is {}'.format((x, y), blocked))
     return not blocked
 
