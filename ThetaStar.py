@@ -13,7 +13,7 @@ LINEWIDTH = 2
 CAN_WIDTH = 0
 CAN_HEIGHT = 0
 
-FILE_PATH = 'tests/test_32.txt'
+FILE_PATH = 'tests/test_0.txt'
 
 matrix_m = 0
 matrix_n = 0

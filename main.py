@@ -6,14 +6,14 @@ import heapq
 
 PADDING_X = 10
 PADDING_Y = 10
-SPACEING_X = 50
-SPACEING_Y = 50
-NODE_RADIUS = 5
-LINEWIDTH = 4
+SPACEING_X = 20
+SPACEING_Y = 20
+NODE_RADIUS = 3
+LINEWIDTH = 2
 CAN_WIDTH = 0
 CAN_HEIGHT = 0
 
-FILE_PATH = 'demo.txt'
+FILE_PATH = 'tests/test_0.txt'
 
 matrix_m = 0
 matrix_n = 0
