@@ -1,7 +1,11 @@
+from inspect import trace
 import math
 from Vertex import Vertex
 from tkinter import *
 import heapq
+import os
+import timeit
+import tracemalloc
 
 
 PADDING_X = 10
@@ -13,49 +17,14 @@ LINEWIDTH = 1
 CAN_WIDTH = 0
 CAN_HEIGHT = 0
 
-FILE_PATH = 'tests/test_0.txt'
-
-matrix_m = 0
-matrix_n = 0
-goal_position = (0, 0)
-start_position = (0, 0)
-
-root = Tk()
-root.title('Codemy.com -  Canvas')
-root.geometry("1920x1080")
-
-my_canvas = Canvas(root, width=2050, height=1050, bg="white")
-my_canvas.pack(pady=20)
-vertices = []
-matrix = []
-
-# --------- Create labels ---------------
-
-lbl_x_value = Label(my_canvas, bg='white', fg='black', font=('Arial', 16), text='x: ')
-lbl_y_value = Label(my_canvas, bg='white', fg='black', font=('Arial', 16), text='y: ')
-lbl_goal = Label(my_canvas, bg='white', fg='black', font=('Arial', 16), text='goal: ')
-lbl_start = Label(my_canvas, bg='white', fg='black', font=('Arial', 16), text='start: ')
-lbl_h_value = Label(my_canvas, bg='white', fg='black', font=('Arial', 16), text='h: ')
-lbl_g_value = Label(my_canvas, bg='white', fg='black', font=('Arial', 16), text='g: ')
-lbl_f_value = Label(my_canvas, bg='white', fg='black', font=('Arial', 16), text='f: ')
-lbl_x_value.place(relx=0.1, rely=0.98, anchor='center')
-lbl_y_value.place(relx=0.2, rely=0.98, anchor='center')
-lbl_goal.place(relx=0.3, rely=0.98, anchor='center')
-lbl_start.place(relx=0.4, rely=0.98, anchor='center')
-lbl_h_value.place(relx=0.5, rely=0.98, anchor='center')
-lbl_g_value.place(relx=0.6, rely=0.98, anchor='center')
-lbl_f_value.place(relx=0.7, rely=0.98, anchor='center')
-
-# --------- End Create labels ---------------
-
 def updateLabels(v):
-    lbl_x_value.config(text= 'x: ' + '{:.2f}'.format(v.x_pos))
-    lbl_y_value.config(text= 'y: ' + '{:.2f}'.format(v.y_pos))
-    lbl_goal.config(text= 'goal: ' + str(v.goal))
-    lbl_start.config(text= 'start: ' + str(v.start))
-    lbl_h_value.config(text= 'h: ' + '{:.2f}'.format(v.h_value))
-    lbl_g_value.config(text= 'g: ' + '{:.2f}'.format(v.g_value))
-    lbl_f_value.config(text= 'f: ' + '{:.2f}'.format(v.f_value))
+        lbl_x_value.config(text= 'x: ' + '{:.2f}'.format(v.x_pos))
+        lbl_y_value.config(text= 'y: ' + '{:.2f}'.format(v.y_pos))
+        lbl_goal.config(text= 'goal: ' + str(v.goal))
+        lbl_start.config(text= 'start: ' + str(v.start))
+        lbl_h_value.config(text= 'h: ' + '{:.2f}'.format(v.h_value))
+        lbl_g_value.config(text= 'g: ' + '{:.2f}'.format(v.g_value))
+        lbl_f_value.config(text= 'f: ' + '{:.2f}'.format(v.f_value))
 
 def handle_enter_vertex(event):
     # find the canvas item below mouse cursor
@@ -158,27 +127,6 @@ def display_grid(matrix, m, n, goal_pos, start_pos): # n = dim of matrix n * n
                                     math.floor(k / (m + 1)) * SPACEING_Y + PADDING_Y, 
                                     (q % (m + 1)) * SPACEING_X + PADDING_X, 
                                     math.floor(q / (m + 1)) * SPACEING_Y + PADDING_Y, width = LINEWIDTH, tags=mytag, fill="black")
-        
-
-cells_input = []
-
-with open(FILE_PATH, "r") as file_input:
-    file_input = file_input.read().splitlines()
-
-
-for i in file_input[3:]:
-    cells_input.append(tuple(map(int, i.split(' '))))
-
-# Dimensions of matrix 
-matrix_m = int(file_input[2].split(' ')[0]) # 4 --> m rows
-matrix_n = int(file_input[2].split(' ')[1]) # 3 --> n columns
-
-goal_position = tuple(map(int, file_input[1].split(' '))) # (2, 1)
-start_position = tuple(map(int, file_input[0].split(' '))) # (2, 4)
-
-display_grid(create_adj_matrix(matrix_m, matrix_n, cells_input), matrix_m, matrix_n, goal_position, start_position)
-
-#-----------------------------------------------------
 
 def UpdateVertex(s,s2, fringeList, start, end):
     if s.g_value + getDist(s,s2) < s2.g_value:
@@ -289,18 +237,110 @@ def Solve(start, end, matrix):
     
     return False, []
 
-#-------------------------------------------------------
-# Call with start and goal
-result, path = Solve(vertices[getVertexid(start_position, matrix_m)], vertices[getVertexid(goal_position, matrix_m)], matrix)
+dir = 'tests'
+totalLen = 0
+totalRuntime = 0
+totalBytes = 0
+i = 0
+for filename in os.listdir(dir):
+    i += 1
+    tracemalloc.start()
+    start = timeit.default_timer()
+    f = os.path.join(dir, filename)
+    FILE_PATH = f
 
-if result:
-    for i in range(0, len(path) - 1 ):
-        tag = '({},{})'.format(path[i + 1].name - 1, path[i].name - 1)
-        tag1 = '({},{})'.format(path[i].name - 1, path[i + 1].name - 1)
-        my_canvas.itemconfigure(tag, fill='red', width = LINEWIDTH + 1)
-        my_canvas.itemconfigure(tag1, fill='red', width = LINEWIDTH + 1)
-else:
-    lbl_path = Label(my_canvas, bg='white', fg='red', font=('Arial', 24), text='NO PATH')
-    lbl_path.place(relx=0.5, rely=0.5, anchor='center')
+    matrix_m = 0
+    matrix_n = 0
+    goal_position = (0, 0)
+    start_position = (0, 0)
 
-root.mainloop()
+    root = Tk()
+    root.title('Codemy.com -  Canvas')
+    root.geometry("1920x1080")
+
+    my_canvas = Canvas(root, width=2050, height=1050, bg="white")
+    my_canvas.pack(pady=20)
+    vertices = []
+    matrix = []
+
+    # --------- Create labels ---------------
+
+    lbl_x_value = Label(my_canvas, bg='white', fg='black', font=('Arial', 16), text='x: ')
+    lbl_y_value = Label(my_canvas, bg='white', fg='black', font=('Arial', 16), text='y: ')
+    lbl_goal = Label(my_canvas, bg='white', fg='black', font=('Arial', 16), text='goal: ')
+    lbl_start = Label(my_canvas, bg='white', fg='black', font=('Arial', 16), text='start: ')
+    lbl_h_value = Label(my_canvas, bg='white', fg='black', font=('Arial', 16), text='h: ')
+    lbl_g_value = Label(my_canvas, bg='white', fg='black', font=('Arial', 16), text='g: ')
+    lbl_f_value = Label(my_canvas, bg='white', fg='black', font=('Arial', 16), text='f: ')
+    lbl_x_value.place(relx=0.1, rely=0.98, anchor='center')
+    lbl_y_value.place(relx=0.2, rely=0.98, anchor='center')
+    lbl_goal.place(relx=0.3, rely=0.98, anchor='center')
+    lbl_start.place(relx=0.4, rely=0.98, anchor='center')
+    lbl_h_value.place(relx=0.5, rely=0.98, anchor='center')
+    lbl_g_value.place(relx=0.6, rely=0.98, anchor='center')
+    lbl_f_value.place(relx=0.7, rely=0.98, anchor='center')
+
+    # --------- End Create labels ---------------
+
+    
+            
+
+    cells_input = []
+
+    with open(FILE_PATH, "r") as file_input:
+        file_input = file_input.read().splitlines()
+
+
+    for i in file_input[3:]:
+        cells_input.append(tuple(map(int, i.split(' '))))
+
+    # Dimensions of matrix 
+    matrix_m = int(file_input[2].split(' ')[0]) # 4 --> m rows
+    matrix_n = int(file_input[2].split(' ')[1]) # 3 --> n columns
+
+    goal_position = tuple(map(int, file_input[1].split(' '))) # (2, 1)
+    start_position = tuple(map(int, file_input[0].split(' '))) # (2, 4)
+
+    display_grid(create_adj_matrix(matrix_m, matrix_n, cells_input), matrix_m, matrix_n, goal_position, start_position)
+
+    #-----------------------------------------------------
+
+    
+
+    #-------------------------------------------------------
+    # Call with start and goal
+    result, path = Solve(vertices[getVertexid(start_position, matrix_m)], vertices[getVertexid(goal_position, matrix_m)], matrix)
+
+    if result:
+        for i in range(0, len(path) - 1 ):
+            tag = '({},{})'.format(path[i + 1].name - 1, path[i].name - 1)
+            tag1 = '({},{})'.format(path[i].name - 1, path[i + 1].name - 1)
+            my_canvas.itemconfigure(tag, fill='red', width = LINEWIDTH + 1)
+            my_canvas.itemconfigure(tag1, fill='red', width = LINEWIDTH + 1)
+    else:
+        lbl_path = Label(my_canvas, bg='white', fg='red', font=('Arial', 24), text='NO PATH')
+        lbl_path.place(relx=0.5, rely=0.5, anchor='center')
+
+    stop = timeit.default_timer()
+    runtime = stop - start
+    totalLen += path[len(path) - 1].g_value
+    totalRuntime += runtime
+    totalBytes += tracemalloc.get_traced_memory()[0]
+
+    print('{} / 50'.format(i))
+    print('Length of path: {}'.format(path[len(path) - 1].g_value))
+    print('Runtime: {}'.format(runtime))
+    print('Memory Usage: {} (current, peak)'.format(tracemalloc.get_traced_memory()))
+    tracemalloc.stop()
+
+    root.quit()
+
+avgRun = totalRuntime / 50
+avgLen = totalLen / 50
+avgBytes = totalBytes / 50
+print('Finished Experiments...')
+print('Printing Results...')
+print('Average Length of paths: {}'.format(avgLen))
+print('Average Runtime: {}'.format(avgRun))
+print('Average Bytes: {}'.format(avgBytes))
+#root.mainloop()
