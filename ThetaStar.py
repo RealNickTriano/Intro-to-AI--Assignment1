@@ -291,7 +291,12 @@ def IsBlocked(xCoord,yCoord):
     print('Checking nodes Top left: {} and Bot Right: {}'.format((x2,y2), (x, y)))
     print(getVertexidWithRightCoords((x2, y2), matrix_m))
     print('Checking edge from {} to {}'.format(getVertexidWithRightCoords((x, y), matrix_m), getVertexidWithRightCoords((x2, y2), matrix_m)))
-    blocked = not matrix[getVertexidWithRightCoords((x, y), matrix_m)][getVertexidWithRightCoords((x2, y2), matrix_m)]
+    mrow = getVertexidWithRightCoords((x, y), matrix_m)
+    mcolumn = getVertexidWithRightCoords((x2, y2), matrix_m)
+    if mcolumn > (len(matrix[mrow]) - 1):
+        blocked = True
+    else:
+        blocked = not matrix[mrow][mcolumn]
     if blocked:
         print('Cell {} is blocked'.format((x, y), blocked))
     else:
