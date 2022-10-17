@@ -39,21 +39,21 @@ lbl_h_value = Label(my_canvas, bg='white', fg='black', font=('Arial', 16), text=
 lbl_g_value = Label(my_canvas, bg='white', fg='black', font=('Arial', 16), text='g: ')
 lbl_f_value = Label(my_canvas, bg='white', fg='black', font=('Arial', 16), text='f: ')
 lbl_name = Label(my_canvas, bg='white', fg='black', font=('Arial', 16), text='name: ')
-lbl_name.place(relx=0.0, rely=0.98, anchor='center')
-lbl_x_value.place(relx=0.1, rely=0.98, anchor='center')
-lbl_y_value.place(relx=0.2, rely=0.98, anchor='center')
-lbl_goal.place(relx=0.3, rely=0.98, anchor='center')
-lbl_start.place(relx=0.4, rely=0.98, anchor='center')
-lbl_h_value.place(relx=0.5, rely=0.98, anchor='center')
-lbl_g_value.place(relx=0.6, rely=0.98, anchor='center')
-lbl_f_value.place(relx=0.7, rely=0.98, anchor='center')
+lbl_name.place(relx=0.1, rely=0.98, anchor='center')
+lbl_x_value.place(relx=0.2, rely=0.98, anchor='center')
+lbl_y_value.place(relx=0.3, rely=0.98, anchor='center')
+lbl_goal.place(relx=0.4, rely=0.98, anchor='center')
+lbl_start.place(relx=0.5, rely=0.98, anchor='center')
+lbl_h_value.place(relx=0.6, rely=0.98, anchor='center')
+lbl_g_value.place(relx=0.7, rely=0.98, anchor='center')
+lbl_f_value.place(relx=0.8, rely=0.98, anchor='center')
 
 # --------- End Create labels ---------------
 
 def updateLabels(v):
     lbl_name.config(text= 'name: ' + '{}'.format(v.name - 1))
-    lbl_x_value.config(text= 'x: ' + '{:.2f}'.format(v.x_pos))
-    lbl_y_value.config(text= 'y: ' + '{:.2f}'.format(v.y_pos))
+    lbl_x_value.config(text= f'x: {v.grid_x + 1} ' + '({:.2f})'.format(v.x_pos))
+    lbl_y_value.config(text= f'y: {v.grid_y + 1} ' + '({:.2f})'.format(v.y_pos))
     lbl_goal.config(text= 'goal: ' + str(v.goal))
     lbl_start.config(text= 'start: ' + str(v.start))
     lbl_h_value.config(text= 'h: ' + '{:.2f}'.format(v.h_value))
@@ -62,14 +62,21 @@ def updateLabels(v):
 
 def handle_enter_vertex(event):
     # find the canvas item below mouse cursor
-    item = my_canvas.find_withtag("current")
+    # rounds x and y to the closest point
+    x = (round((event.x - (PADDING_X)) / (SPACEING_X)) * (SPACEING_X)) + (PADDING_X)
+    y = (round((event.y - (PADDING_Y)) / (SPACEING_Y)) * (SPACEING_Y)) + (PADDING_Y)
+
+    print ("clicked at", x, y)
+
+    my_canvas.moveto(display_grid.new, x - 5, y - 5)
+
+    for i in vertices:
+        if i.x_pos == x and i.y_pos == y:
+            item = i.name
+
     # now we can get this vertex from our stored array of vertices
     # and check anything we want!
-    updateLabels(vertices[item[0] - 1])
-
-def handle_leave_vertex(event):
-    # clear the label text
-    pass
+    updateLabels(vertices[item - 1])
 
 # TODO: Refactor to use data from input file
 
@@ -123,23 +130,23 @@ def getVertexCoords(vid, m):
     return coords
 
 # Arguments: x pos, y pos, r radius, goal bool, start bool
-def create_circle(x, y, r, canvas, goal, start): # center x,y, radius
+def create_circle(x, y, r, canvas, goal, start, grid_x, grid_y): # center x,y, radius
+    endpoint_radius = 2
     x0 = x - r
     y0 = y - r
     x1 = x + r
     y1 = y + r
     if goal and start:
-        c = canvas.create_oval(x0, y0, x1, y1, fill='purple', outline='purple')
+        c = canvas.create_oval(x0 - endpoint_radius, y0 - endpoint_radius, x1 + endpoint_radius, y1 + endpoint_radius, fill='purple', outline='purple',  tags=f'{grid_x}x{grid_y}y')
     elif goal:
-        c = canvas.create_oval(x0, y0, x1 , y1, fill='blue', outline='blue')
+        c = canvas.create_oval(x0 - endpoint_radius, y0 - endpoint_radius, x1 + endpoint_radius , y1 + endpoint_radius, fill='blue', outline='blue',  tags=f'{grid_x}x{grid_y}y')
     elif start:
-        c = canvas.create_oval(x0, y0, x1, y1, fill='red', outline='red')
+        c = canvas.create_oval(x0 - endpoint_radius, y0 - endpoint_radius, x1 + endpoint_radius, y1 + endpoint_radius, fill='red', outline='red',  tags=f'{grid_x}x{grid_y}y')
     else:
-        c = canvas.create_oval(x0, y0, x1, y1, fill='#000')
-    canvas.tag_bind(c, "<Enter>", handle_enter_vertex)
-    canvas.tag_bind(c, "<Leave>", handle_leave_vertex)
+        c = canvas.create_oval(x0, y0, x1, y1, fill='#000', tags=f'{grid_x}x{grid_y}y')
+    canvas.bind("<Button-1>", handle_enter_vertex)
     # Hold vertex in array
-    v = Vertex(c, x, y, goal, start, 0, 0)
+    v = Vertex(c, x, y, goal, start, 0, 0, grid_x, grid_y)
     vertices.append(v)
 
     return c
@@ -154,7 +161,7 @@ def display_grid(matrix, m, n, goal_pos, start_pos): # n = dim of matrix n * n
                 goal = True
             if (j + 1, i + 1) == start_pos:
                 start = True
-            create_circle(j * SPACEING_X + PADDING_X, i * SPACEING_Y + PADDING_Y, NODE_RADIUS,  my_canvas, goal, start)   
+            create_circle(j * SPACEING_X + PADDING_X, i * SPACEING_Y + PADDING_Y, NODE_RADIUS,  my_canvas, goal, start, j, i)
             
     for k in range(0, (m + 1) * (n + 1)):
         for q in range(k, (m + 1) * (n + 1)):
@@ -165,7 +172,8 @@ def display_grid(matrix, m, n, goal_pos, start_pos): # n = dim of matrix n * n
                                     math.floor(k / (m + 1)) * SPACEING_Y + PADDING_Y, 
                                     (q % (m + 1)) * SPACEING_X + PADDING_X, 
                                     math.floor(q / (m + 1)) * SPACEING_Y + PADDING_Y, width = LINEWIDTH, tags=mytag, fill="black")
-        
+
+    display_grid.new = my_canvas.create_oval(0.0, 10.0, 10.0, 0.0, fill='aqua', outline='purple')
 
 cells_input = []
 

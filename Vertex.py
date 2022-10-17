@@ -1,7 +1,7 @@
 class Vertex:
 
     # constructor
-    def __init__(self, name, x_pos, y_pos, goal, start, h, g, parent = None) -> None:
+    def __init__(self, name, x_pos, y_pos, goal, start, h, g, grid_x, grid_y, parent = None) -> None:
         self.name = name
         self.x_pos = x_pos
         self.y_pos = y_pos
@@ -11,6 +11,8 @@ class Vertex:
         self.g_value = g
         self.f_value = h + g
         self.parent = parent
+        self.grid_x = grid_x
+        self.grid_y = grid_y
 
     """ def __eq__(self, __o: object) -> bool:
         return isinstance(__o, Vertex) and __o.name == self.name """
